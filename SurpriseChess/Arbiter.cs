@@ -1,6 +1,6 @@
 ﻿namespace SurpriseChess;
 
-// Chịu trách nhiệm xác định tính hợp pháp của các nước đi và kết quả của trò chơi
+// Chịu trách nhiệm xác định tính hợp lệ của các nước đi và kết quả của trò chơi
 public class Arbiter
 {
     private readonly Board board; // Bàn cờ hiện tại
@@ -13,8 +13,8 @@ public class Arbiter
         this.gameState = gameState;
     }
 
-    // Trả về tất cả các nước đi hợp pháp từ một vị trí cho trước
-    // Một nước đi là hợp pháp nếu không để vua của người chơi bị chiếu
+    // Trả về tất cả các nước đi hợp lệ từ một vị trí cho trước
+    // Một nước đi là hợp lệ nếu không để vua của người chơi bị chiếu
     public HashSet<Position> GetLegalMoves(Position source)
     {
         HashSet<Position> legalMoves = new();
@@ -26,14 +26,14 @@ public class Arbiter
         {
             if (IsLegalMove(piece, source, destination, currentKingPosition))
             {
-                legalMoves.Add(destination); // Thêm nước đi hợp pháp vào danh sách
+                legalMoves.Add(destination); // Thêm nước đi hợp lệ vào danh sách
             }
         }
 
-        return legalMoves; // Trả về danh sách các nước đi hợp pháp
+        return legalMoves; // Trả về danh sách các nước đi hợp lệ
     }
 
-    // Kiểm tra tính hợp pháp của một nước đi
+    // Kiểm tra tính hợp lệ của một nước đi
     private bool IsLegalMove(
         Piece piece,
         Position source,
@@ -122,7 +122,7 @@ public class Arbiter
 
         Position kingPosition = LocateKing(currentPlayerColor);
         bool isKingInCheck = IsPositionUnderAttack(currentPlayerColor, kingPosition); // Kiểm tra vua có bị chiếu không
-        bool hasLegalMoves = HasLegalMoves(currentPlayerColor, kingPosition); // Kiểm tra có nước đi hợp pháp không
+        bool hasLegalMoves = HasLegalMoves(currentPlayerColor, kingPosition); // Kiểm tra có nước đi hợp lệ không
 
         // Kiểm tra nếu người chơi hiện tại bị chiếu hết
         if (isKingInCheck && !hasLegalMoves)
