@@ -17,7 +17,7 @@ public interface IBoardSetup
     void SetUp(Board board);
 }
 
-public interface IChessBot
-{
-    Task<List<(Position, Position)>> GetBestMoves(string fen);
-}
+//public interface IChessBot
+//{
+//    Task<List<(Position, Position)>> GetBestMoves(string fen);
+//}

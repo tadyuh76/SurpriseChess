@@ -57,4 +57,25 @@ public static class ChessUtils
             [CastleDirection.QueenSide] = true
         }
     };
+
+    public static Dictionary<string, string> BlackPieceEmojis = new()
+        {
+            { "King", "🦁" },
+            { "Queen", "🐯" },
+            { "Rook", "🐻" },
+            { "Bishop", "🦉" },
+            { "Knight", "🐴" },
+            { "Pawn", "🐹" },
+
+        };
+
+    public static Dictionary<string, string> WhitePieceEmojis = new()
+        {
+            { "King", "🤴" },
+            { "Queen", "👸" },
+            { "Rook", "🏰" },
+            { "Bishop", "🥷" },
+            { "Knight", "🏇" },
+            { "Pawn", "💂" },
+        };
 }

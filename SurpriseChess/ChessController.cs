@@ -9,68 +9,63 @@ namespace SurpriseChess;
 
 internal class ChessController
 {
-    private int cursorX = 0, cursorY = 7;
-    private readonly ChessModel model;
-    private readonly ChessView view;
+    private int cursorX = 0, cursorY = 7; // Vị trí con trỏ ban đầu trên bàn cờ
+    private readonly ChessModel model; // Model trò chơi (MVC)
+    private readonly ChessView view; // View trò chơi (MVC)
 
-    public static int squareWidth = 4;
     public ChessController(ChessModel model, ChessView view)
     {
-        this.model = model;
-        this.view = view;
+        this.model = model; // Khởi tạo Model
+        this.view = view;   // Khởi tạo View
     }
 
+    // Chạy trò chơi
     public void Run()
     {
-        model.NewGame(GameMode.PlayerVsPlayer);
-        while(true)
+        model.NewGame(GameMode.PlayerVsPlayer); // Bắt đầu trò chơi mới
+
+        while (model.Result == GameResult.InProgress) // Khi trò chơi đang diễn ra
         {
-            view.DrawBoard(model.Board, model.SelectedPosition, model.HighlightedMoves, cursorX, cursorY);
-            ListenKeyStroke();
+            Board board = model.Board;
+            Position? selectedPosition = model.SelectedPosition;
+            HashSet<Position> highlightedMoves = model.HighlightedMoves;
+            PieceColor currentPlayerColor = model.GameState.CurrentPlayerColor;
+
+            view.DrawBoard(board, selectedPosition, highlightedMoves, currentPlayerColor, cursorX, cursorY); // Vẽ bàn cờ
+            ListenKeyStroke(); // Lắng nghe phím bấm
         }
-        
     }
 
+    // Lắng nghe các phím bấm
     public void ListenKeyStroke()
     {
-        ConsoleKeyInfo keyInfo = Console.ReadKey();
+        ConsoleKeyInfo keyInfo = Console.ReadKey(); // Đọc phím bấm
 
-        if (keyInfo.Key == ConsoleKey.LeftArrow && cursorX > 0)
-            cursorX -= 1;
-        else if (keyInfo.Key == ConsoleKey.RightArrow && cursorX < 7)
-            cursorX += 1;
-        else if (keyInfo.Key == ConsoleKey.UpArrow)
-        {
-            if (cursorY > 0) cursorY--;
-        }
-        else if (keyInfo.Key == ConsoleKey.DownArrow)
-        {
-            if (cursorY < 7) cursorY++;
-        }
-        else if (keyInfo.Key == ConsoleKey.Enter)
-            HandleBoardClick(new Position(cursorY, cursorX));
-        //else if (keyInfo.Key == ConsoleKey.D)
-        //    debugInteract();
-        //else if (keyInfo.Key == ConsoleKey.Escape)
-        //    cancel();
+        // Cập nhật vị trí con trỏ theo hướng di chuyển
+        if (keyInfo.Key == ConsoleKey.LeftArrow && cursorX > 0) cursorX--;
+        else if (keyInfo.Key == ConsoleKey.RightArrow && cursorX < 7) cursorX++;
+        else if (keyInfo.Key == ConsoleKey.UpArrow && cursorY > 0) cursorY--;
+        else if (keyInfo.Key == ConsoleKey.DownArrow && cursorY < 7) cursorY++;
+        else if (keyInfo.Key == ConsoleKey.Enter) HandleBoardClick(new Position(cursorY, cursorX)); // Xử lý nhấp chuột
     }
 
+    // Xử lý nhấp chuột vào ô
     public void HandleBoardClick(Position clickedSquare)
     {
-        // If the player clicks on one of the highlighted moves, move there
+        // Nếu nhấp vào nước đi hợp lệ, di chuyển đến đó
         if (model.HighlightedMoves.Contains(clickedSquare))
         {
             model.HandleMoveTo(clickedSquare);
             return;
         }
 
-        // If the player clicks on one of their pieces, select it
+        // Nếu nhấp vào quân cờ của mình, chọn nó
         Piece? clickedPiece = model.Board.GetPieceAt(clickedSquare);
         if (clickedPiece?.Color == model.GameState.CurrentPlayerColor)
         {
             model.Select(clickedSquare);
         }
-        else  // Deselect whatever's selected
+        else // Bỏ chọn quân cờ
         {
             model.Deselect();
         }

@@ -1,8 +1,8 @@
-namespace SurpriseChess;
+﻿namespace SurpriseChess;
 
 public static class PieceFactory
 {
-    // Creates the appropriate piece given the color and type
+    // Tạo quân cờ tương ứng dựa trên màu sắc và loại
     public static Piece Create(PieceColor color, PieceType type)
     {
         return type switch
@@ -13,7 +13,7 @@ public static class PieceFactory
             PieceType.Knight => new Knight(color),
             PieceType.Bishop => new Bishop(color),
             PieceType.Pawn => new Pawn(color),
-            _ => throw new ArgumentException("Invalid piece type")
+            _ => throw new ArgumentException("Invalid piece type")  // Thông báo lỗi nếu loại quân cờ không hợp lệ
         };
     }
 }

@@ -7,14 +7,14 @@ public class Queen : LongRangePiece
 
     private static readonly (int, int)[] QueenDirectionOffsets = 
     {
-        (1, 0),   // right
-        (-1, 0),  // left
-        (0, 1),   // down
-        (0, -1),  // up
-        (1, 1),   // bottom-right
-        (-1, 1),  // bottom-left
-        (1, -1),  // top-right
-        (-1, -1)  // top-left
+        (1, 0),   // phải
+        (-1, 0),  // trái
+        (0, 1),   // xuống
+        (0, -1),  // lên
+        (1, 1),   // phải dưới
+        (-1, 1),  // trái dưới
+        (1, -1),  // phải trên
+        (-1, -1)  // trái trên
     };
 
     public Queen(PieceColor color) : base(color, PieceType.Queen, QueenDirectionOffsets) { }

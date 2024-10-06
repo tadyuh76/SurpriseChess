@@ -1,100 +1,108 @@
 ﻿using System;
+using System.Drawing;
 
 namespace SurpriseChess
 {
     internal class ChessView
     {
-        public void DrawBoard(Board board, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
+        // Phương thức hiển thị toàn bộ bàn cờ, bao gồm các quân cờ và các ô được đánh dấu
+        public void DrawBoard(Board board, Position? selectedPosition, HashSet<Position> highlightedMoves, PieceColor currentPlayerColor, int cursorX, int cursorY)
         {
             Console.Clear();
-            bool isWhite = true;
-            //foreach(var item in high)
 
+            // Vòng lặp để vẽ từng hàng của bàn cờ
             for (int row = 0; row < 8; row++)
             {
+                // Vòng lặp để vẽ từng cột của bàn cờ
                 for (int col = 0; col < 8; col++)
                 {
-                    var currentPosition = new Position(row, col);
-                    Piece? piece = board.GetPieceAt(currentPosition);
-
-                    // Determine background color for square
-
-                    if (col == cursorX && row == cursorY)
-                    {
-                        Console.BackgroundColor = ConsoleColor.DarkGreen;
-                    }
-                    else if (highlightedMoves.Contains(currentPosition))
-                    {
-                        Console.BackgroundColor = ConsoleColor.Yellow; // Highlight legal moves
-                    }
-                    else if (selectedPosition == currentPosition)
-                    {
-                        Console.BackgroundColor = ConsoleColor.Red; // Highlight selected piece
-                    }
-                    else if (isWhite)
-                    {
-                        Console.BackgroundColor = ConsoleColor.Gray; // White square
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = ConsoleColor.DarkGray; // Black square
-                    }
-
-                    // Display the piece or an empty space
-                    Console.Write($" {piece?.DisplaySymbol ?? "  "} ");
-
-                    // Alternate square color
-                    isWhite = !isWhite;
+                    Position currentPosition = new Position(row, col);
+                    // Vẽ từng ô cờ dựa trên trạng thái của nó
+                    DrawSquare(board, currentPosition, selectedPosition, highlightedMoves, cursorX, cursorY);
                 }
 
-                // Change color pattern on the next row
-                isWhite = !isWhite;
-
-                // Reset the background and move to the next line
                 Console.ResetColor();
                 Console.WriteLine();
             }
 
+            // Hiển thị lượt chơi hiện tại
+            DisplayCurrentTurn(currentPlayerColor);
+            // In mô tả cho các quân cờ
             PrintDescription();
         }
 
-        private readonly Dictionary<string, string> blackPieceEmojis = new()
+        // Phương thức để vẽ một ô cờ cụ thể
+        private void DrawSquare(Board board, Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
         {
-            { "King", "🦁" },
-            { "Queen", "🐯" },
-            { "Rook", "🐻" },
-            { "Bishop", "🦉" },
-            { "Knight", "🐴" },
-            { "Pawn", "🐹" },
+            // Thiết lập màu nền cho ô cờ dựa trên trạng thái của nó
+            SetSquareBackgroundColor(position, selectedPosition, highlightedMoves, cursorX, cursorY);
 
-        };
+            // Hiển thị quân cờ hoặc khoảng trống nếu không có quân cờ
+            Piece? piece = board.GetPieceAt(position);
+            Console.Write($" {piece?.DisplaySymbol ?? "  "} ");
+        }
 
-        private readonly Dictionary<string, string> whitePieceEmojis = new()
+        // Phương thức hỗ trợ để thiết lập màu nền của ô cờ
+        private void SetSquareBackgroundColor(Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
         {
-            { "King", "🤴" },
-            { "Queen", "👸" },
-            { "Rook", "🏰" },
-            { "Bishop", "🥷" },
-            { "Knight", "🏇" },
-            { "Pawn", "💂" },
-        };
+            // Kiểm tra xem con trỏ hiện tại có nằm trên ô này không
+            bool isCursor = (position.Col == cursorX && position.Row == cursorY);
+            // Kiểm tra xem ô này có phải là một nước đi hợp lệ được đánh dấu không
+            bool isHighlighted = highlightedMoves.Contains(position);
+            // Kiểm tra xem ô này có phải là ô đang được chọn không
+            bool isSelected = (selectedPosition == position);
 
-        public void PrintDescription()
+            if (isCursor)
+            {
+                // Nếu là con trỏ, tô nền màu xanh đậm
+                Console.BackgroundColor = ConsoleColor.DarkGreen;
+            }
+            else if (isHighlighted)
+            {
+                // Nếu là ô được đánh dấu, tô nền màu vàng
+                Console.BackgroundColor = ConsoleColor.Yellow;
+            }
+            else if (isSelected)
+            {
+                // Nếu là ô đang được chọn, tô nền màu đỏ
+                Console.BackgroundColor = ConsoleColor.Red;
+            }
+            else if ((position.Row + position.Col) % 2 == 0)
+            {
+                // Nếu là ô sáng, tô nền màu xám
+                Console.BackgroundColor = ConsoleColor.Gray;
+            }
+            else
+            {
+                // Nếu là ô tối, tô nền màu xám đậm
+                Console.BackgroundColor = ConsoleColor.DarkGray;
+            }
+        }
+
+        // Hiển thị lượt chơi hiện tại (trắng hoặc đen)
+        private void DisplayCurrentTurn(PieceColor currentPlayerColor)
+        {
+            Console.WriteLine();
+            Console.WriteLine(currentPlayerColor == PieceColor.White ? "Lượt chơi của Vương quốc" : "Lượt chơi của Rừng sâu");
+        }
+
+        // In mô tả cho các quân cờ với biểu tượng tương ứng
+        private void PrintDescription()
         {
             int currentLine = 0;
+            PrintPieceDescription("Vương quốc", ChessUtils.WhitePieceEmojis, ref currentLine);
+            PrintPieceDescription("Rừng sâu", ChessUtils.BlackPieceEmojis, ref currentLine);
+        }
+
+        // In mô tả từng loại quân cờ với biểu tượng và tên tương ứng
+        private void PrintPieceDescription(string pieceName, Dictionary<string, string> emojisDict, ref int currentLine)
+        {
             Console.SetCursorPosition(40, currentLine++);
-            Console.WriteLine("White: ");
-            foreach (var piece in whitePieceEmojis)
+            Console.WriteLine($"{pieceName}: ");
+            foreach (var pieceDescription in emojisDict)
             {
                 Console.SetCursorPosition(40, currentLine++);
-                Console.WriteLine($"{piece.Value}: {piece.Key}");
-            }
-            Console.SetCursorPosition(40, currentLine++);
-            Console.WriteLine("Black: ");
-            foreach (var piece in blackPieceEmojis)
-            {
-                Console.SetCursorPosition(40, currentLine++);
-                Console.WriteLine($"{piece.Value}: {piece.Key}");
+                Console.WriteLine($"{pieceDescription.Value}: {pieceDescription.Key}");
             }
         }
     }

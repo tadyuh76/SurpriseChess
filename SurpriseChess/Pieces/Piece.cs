@@ -1,34 +1,43 @@
-namespace SurpriseChess;
+﻿namespace SurpriseChess;
 
+// Lớp trừu tượng đại diện cho một quân cờ trong trò chơi
 public abstract class Piece : IPrototype<Piece>
 {
+    // Màu sắc của quân cờ
     public PieceColor Color { get; }
+    // Loại quân cờ
     public PieceType Type { get; }
+    // Thuộc tính xác định xem quân có đang được tàng hình không
     public bool IsInvisible { get; set; } = false;
+    // Thuộc tính xác định xem quân có bị tê liệt không
     public bool IsParalyzed { get; set; } = false;
+    // Thuộc tính xác định xem quân có được bảo vệ không
     public bool IsShielded { get; set; } = false;
+    // Ký hiệu hiển thị cho quân cờ (biểu tượng)
     public abstract string DisplaySymbol { get; }
 
+    // Khởi tạo quân cờ với màu sắc và loại
     protected Piece(PieceColor color, PieceType type)
     {
         Color = color;
         Type = type;
     }
 
-    // Gets all the possible moves of a piece from a position given the board state
-    // Does not take into account king safety 
+    // Lấy tất cả các nước di chuyển có thể của quân từ một vị trí dựa trên trạng thái bàn cờ
+    // Không xem xét liệu vua có đang bị tấn công hay không
     public abstract List<Position> GetMoves(
         IBoardView board, Position currentPosition, GameState gameState
     );
 
-    // Creates a deep copy of the piece
+    // Tạo một bản sao sâu của quân cờ
     public Piece Clone()
     {
         Piece newPiece = PieceFactory.Create(Color, Type);
-        newPiece.IsInvisible = IsInvisible;
+        // Sao chép thuộc tính của quân cờ
+        newPiece.IsInvisible = IsInvisible;  
         newPiece.IsParalyzed = IsParalyzed;
-        newPiece.IsShielded = IsShielded;
+        newPiece.IsShielded = IsShielded; 
 
-        return newPiece;
+        return newPiece;  // Trả về bản sao mới
     }
 }
