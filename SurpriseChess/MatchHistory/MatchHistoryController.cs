@@ -2,23 +2,23 @@ namespace SurpriseChess;
 
 public class MatchHistoryController : IController
 {
-    private readonly MatchHistoryModel _model;
-    private readonly MatchHistoryView _view;
+    private readonly MatchHistoryModel model;
+    private readonly MatchHistoryView view;
 
     public MatchHistoryController(MatchHistoryModel model, MatchHistoryView view)
     {
-        _model = model;
-        _view = view;
+        this.model = model;
+        this.view = view;
     }
 
     public void Run()
     {
-        _view.Render(_model.Matches);
+        view.Render(model.Matches);
 
-        int selectedId = _view.GetSelectedMatchId();
+        int selectedId = view.GetSelectedMatchId();
         if (selectedId > 0)
         {
-            var selectedMatch = _model.Matches.FirstOrDefault(m => m.Id == selectedId);
+            var selectedMatch = model.Matches.FirstOrDefault(m => m.Id == selectedId);
             if (selectedMatch != null)
             {
                 // Navigate to the Game Screen with the selected match details

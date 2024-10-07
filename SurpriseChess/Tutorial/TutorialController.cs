@@ -2,17 +2,17 @@ namespace SurpriseChess;
 
 class TutorialController : IController
 {
-    private TutorialModel _model;
-    private TutorialView _view;
+    private readonly TutorialModel model;
+    private readonly TutorialView view;
 
     public TutorialController(TutorialModel model, TutorialView view)
     {
-        _model = model;
-        _view = view;
+        this.model = model;
+        this.view = view;
     }
 
     public void Run()
     {
-        _view.Render();
+        view.Render();
     }
 }
