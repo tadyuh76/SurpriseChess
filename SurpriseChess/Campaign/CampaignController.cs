@@ -1,4 +1,4 @@
-namespace SurpriseChess;
+﻿namespace SurpriseChess;
 
 public class CampaignController : IController
 {
@@ -58,8 +58,10 @@ public class CampaignController : IController
 
         // for placeholder
         ChessController chessController = new ChessController(
-           new ChessModel(new Chess960()),
-           new ChessView()
+            new ChessModel(new Chess960()),
+            new ChessView(),
+            GameMode.PlayerVsPlayer,
+            selectedNode.Difficulty
         );
         chessController.Run();
     }
