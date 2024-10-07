@@ -22,11 +22,11 @@ public class CampaignController : IController
 
             switch (key)
             {
-                case ConsoleKey.LeftArrow:
-                    model.MoveLeft();
+                case ConsoleKey.UpArrow:
+                    model.MoveUp();
                     break;
-                case ConsoleKey.RightArrow:
-                    model.MoveRight();
+                case ConsoleKey.DownArrow:
+                    model.MoveDown();
                     break;
                 case ConsoleKey.Enter:
                     // Handle selecting the node and navigating to the game screen
@@ -34,6 +34,7 @@ public class CampaignController : IController
                     break;
                 case ConsoleKey.Backspace:
                     // Return to the home screen
+                    HandleNavigateBack();
                     return;
             }
 
@@ -45,17 +46,6 @@ public class CampaignController : IController
         var selectedNode = model.Nodes[model.CurrentNodeIndex];
         Console.WriteLine($"\nStarting game at node {selectedNode.Id} with difficulty {selectedNode.Difficulty}...");
 
-        // Call the game controller to start the game at the selected difficulty level
-        // Navigate to the Game Screen with the selected match details
-        // ChessController chessController = new ChessController(
-        //    new ChessModel(
-        //        // convert FENs to BoardSetups
-        //        // then check if the model receives the list of board setups,
-        //        // it will render the UI for viewing history, not for playing the game.
-        //    ),
-        //    new ChessView()
-        //);
-
         // for placeholder
         ChessController chessController = new ChessController(
             new ChessModel(new Chess960()),
@@ -64,5 +54,23 @@ public class CampaignController : IController
             selectedNode.Difficulty
         );
         chessController.Run();
+    }
+
+    private void HandleNavigateBack()
+    {
+        // Yêu cầu người dung xác nhận thoát trò chơi
+        ConsoleKey keyPressed;
+
+        keyPressed = Console.ReadKey().Key;
+
+        if (keyPressed == ConsoleKey.Backspace)
+        {
+            // Trở về màn hình chính
+            ScreenManager.Instance.NavigateToScreen(new HomeController(
+                new HomeModel(),
+                new HomeView()
+            ));
+        }
+
     }
 }

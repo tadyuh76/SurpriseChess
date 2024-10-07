@@ -60,7 +60,9 @@ public class HomeController : IController
             case 0:
                 ScreenManager.Instance.NavigateToScreen(new ChessController(
                     new ChessModel(new Chess960()),
-                    new ChessView()
+                    new ChessView(),
+                    GameMode.PlayerVsPlayer,
+                    null
                 ));
                 break;
             case 1:

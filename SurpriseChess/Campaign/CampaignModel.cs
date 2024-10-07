@@ -29,12 +29,12 @@ public class CampaignModel
         };
     }
 
-    public void MoveLeft()
+    public void MoveUp()
     {
         if (CurrentNodeIndex > 0) CurrentNodeIndex--;
     }
 
-    public void MoveRight()
+    public void MoveDown()
     {
         if (CurrentNodeIndex < Nodes.Count - 1) CurrentNodeIndex++;
     }
