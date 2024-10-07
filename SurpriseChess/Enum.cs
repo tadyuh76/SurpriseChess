@@ -23,4 +23,12 @@ public enum GameResult
 }
 
 // Các màn hình trong ứng dụng
-public enum Screen { Home, Game, GameOver }
+public enum Screen
+{ 
+    Home, // Màn hình chính
+    Game, // Màn hình chơi
+    GameOver, // Màn hình kết thúc trò chơi
+    Campaign, // Màn hình chọn bàn chơi (Chế độ chơi với máy)
+    Tutorial, // Màn hình hướng dẫn chơi
+    MatchHistory // Màn hình xem lịch sử các trận đấu
+}

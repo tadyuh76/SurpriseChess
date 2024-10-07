@@ -7,4 +7,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="PlayerVsPlayer\**" />
+    <EmbeddedResource Remove="PlayerVsPlayer\**" />
+    <None Remove="PlayerVsPlayer\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Tutorial\" />
+  </ItemGroup>
+
 </Project>

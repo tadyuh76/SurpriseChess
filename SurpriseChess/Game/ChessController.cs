@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace SurpriseChess;
 
-namespace SurpriseChess;
-
-internal class ChessController
+internal class ChessController : IController
 {
     private int cursorX = 0, cursorY = 7; // Vị trí con trỏ ban đầu trên bàn cờ
     private readonly ChessModel model; // Model trò chơi (MVC)
@@ -31,13 +24,13 @@ internal class ChessController
             HashSet<Position> highlightedMoves = model.HighlightedMoves;
             PieceColor currentPlayerColor = model.GameState.CurrentPlayerColor;
 
-            view.DrawBoard(board, selectedPosition, highlightedMoves, currentPlayerColor, cursorX, cursorY); // Vẽ bàn cờ
+            view.Render(board, selectedPosition, highlightedMoves, currentPlayerColor, cursorX, cursorY); // Vẽ bàn cờ
             ListenKeyStroke(); // Lắng nghe phím bấm
         }
     }
 
     // Lắng nghe các phím bấm
-    public void ListenKeyStroke()
+    private void ListenKeyStroke()
     {
         ConsoleKeyInfo keyInfo = Console.ReadKey(); // Đọc phím bấm
 
@@ -46,11 +39,12 @@ internal class ChessController
         else if (keyInfo.Key == ConsoleKey.RightArrow && cursorX < 7) cursorX++;
         else if (keyInfo.Key == ConsoleKey.UpArrow && cursorY > 0) cursorY--;
         else if (keyInfo.Key == ConsoleKey.DownArrow && cursorY < 7) cursorY++;
-        else if (keyInfo.Key == ConsoleKey.Enter) HandleBoardClick(new Position(cursorY, cursorX)); // Xử lý nhấp chuột
+        else if (keyInfo.Key == ConsoleKey.Enter) HandleBoardClick(new Position(cursorY, cursorX));
+        else if (keyInfo.Key == ConsoleKey.Backspace) HandleNavigateBack();
     }
 
     // Xử lý nhấp chuột vào ô
-    public void HandleBoardClick(Position clickedSquare)
+    private void HandleBoardClick(Position clickedSquare)
     {
         // Nếu nhấp vào nước đi hợp lệ, di chuyển đến đó
         if (model.HighlightedMoves.Contains(clickedSquare))
@@ -69,5 +63,26 @@ internal class ChessController
         {
             model.Deselect();
         }
+    }
+
+    private void HandleNavigateBack()
+    {
+        ConsoleKey keyPressed;
+        do
+        {
+            keyPressed = Console.ReadKey(true).Key;
+
+            if (keyPressed == ConsoleKey.Backspace)
+            {
+                // Return to Home Screen
+                ScreenManager.Instance.NavigateToScreen(new HomeController(
+                    new HomeModel(),
+                    new HomeView()
+                ));
+                break;
+            }
+
+            // Implement additional key handling if needed
+        } while (true);
     }
 }

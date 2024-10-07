@@ -1,0 +1,5 @@
+namespace SurpriseChess;
+class TutorialModel
+{
+
+}
