@@ -11,7 +11,7 @@ internal class Program
         HomeView homeView = new();
         HomeModel homeModel = new();
         HomeController homeController = new(homeModel, homeView);
-
+        // xin loi
         ScreenManager.Instance.NavigateToScreen(homeController);
     }
 }
