@@ -6,7 +6,7 @@ public class HomeView
     public void Render(HomeModel model)
     {
         Console.Clear();
-        int consoleWidth = Console.WindowWidth; // Use dynamic console width
+        int consoleWidth = Console.WindowWidth; // Sử dụng chiều rộng bảng điều khiển động
         Console.CursorVisible = false; // Giấu con trỏ
 
         DrawCenteredText(consoleWidth,@"
@@ -18,19 +18,36 @@ public class HomeView
                  |_|                    
 ", ConsoleColor.Cyan);
 
-        Console.WriteLine("Home Screen - Use Arrow Keys to navigate, Enter to select, Backspace to exit:\n");
+        // Căn giữa "Home Screen" 
+        DrawCenteredText(consoleWidth,"Home Screen", ConsoleColor.White);
+
+        // Căn giữa phần hướng dẫn 
+        DrawCenteredText(consoleWidth, "Use Arrow Keys to navigate");
+        DrawCenteredText(consoleWidth, "Enter to select");
+        DrawCenteredText(consoleWidth, "Backspace to exit");
+        Console.WriteLine();
+
+
 
         for (int i = 0; i < model.Options.Length; i++)
         {
+            string option = model.Options[i];
+            string prefix = (i == model.SelectedIndex) ? "> " : "  ";
+            string line = $"{prefix}{option}";
+
+            // Tính khoảng cách để căn giữa
+            int spaces = (consoleWidth - line.Length) / 2;
+            string centeredLine = new string(' ', Math.Max(0, spaces)) + line;
+
             if (i == model.SelectedIndex)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"> {model.Options[i]}");
+                Console.WriteLine(centeredLine); 
                 Console.ResetColor();
             }
             else
             {
-                Console.WriteLine($"  {model.Options[i]}");
+                Console.WriteLine(centeredLine);  
             }
         }
         
