@@ -1,4 +1,8 @@
-﻿namespace SurpriseChess;
+﻿using SurpriseChess.MatchHistory;
+using System.Text.RegularExpressions;
+using SurpriseChess.FEN;
+
+namespace SurpriseChess;
 
 internal class ChessController : IController
 {
@@ -8,6 +12,7 @@ internal class ChessController : IController
 
     private GameMode gameMode = GameMode.PlayerVsPlayer;
     private int? difficultyLevel;
+    private Match? match;
 
     public ChessController(ChessModel model, ChessView view, GameMode gameMode, int? difficultyLevel = null)
     {
@@ -15,6 +20,14 @@ internal class ChessController : IController
         this.view = view;   // Khởi tạo View
         this.gameMode = gameMode; // Chế độ chơi
         this.difficultyLevel = difficultyLevel; // Mức độ khó
+                                                // Initialize match with FEN history (empty at start)
+        match = new Match
+        {
+            
+            MatchDate = DateTime.Now,
+            HistoryFEN = new List<string>(), // Initialize with an empty list
+            Result = "InProgress" // Initial match result
+        };
     }
 
     // Chạy trò chơi
@@ -30,8 +43,17 @@ internal class ChessController : IController
             PieceColor currentPlayerColor = model.GameState.CurrentPlayerColor;
 
             view.Render(board, selectedPosition, highlightedMoves, currentPlayerColor, cursorX, cursorY); // Vẽ bàn cờ
+
+            // Record the FEN of the current board state
+            string currentFEN = FEN.FEN.GetFEN(model.Board, model.GameState);
+            match?.HistoryFEN.Add(currentFEN); // Store the FEN in the match history
+
             ListenKeyStroke(); // Lắng nghe phím bấm
+
         }
+        // When the game finishes, save the match result and export the history
+        match.Result = model.Result.ToString();
+        MatchHistoryManager.SaveMatch(match); // Export the match to file using your MatchHistoryManager
     }
 
     // Lắng nghe các phím bấm

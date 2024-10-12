@@ -13,7 +13,7 @@ public class King : SimpleMovementPiece
             (0, 1), (1, 0), (0, -1), (-1, 0)
     };
 
-    // Khởi tạo quân vua với màu sắc ALO
+    // Khởi tạo quân vua với màu sắc
     public King(PieceColor color) : base(color, PieceType.King, KingMoveOffsets) { }
 
     public override List<Position> GetMoves(IBoardView board, Position currentPosition, GameState gameState)
