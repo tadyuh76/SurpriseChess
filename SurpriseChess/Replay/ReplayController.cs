@@ -1,43 +1,56 @@
-﻿using SurpriseChess;
+﻿using System;
+using System.Collections.Generic;
 
-public class ReplayController : IController
+namespace SurpriseChess
 {
-    private readonly ReplayModel model;
-    private readonly ReplayView view;
-    private ReplayBoard board;
-
-    public ReplayController(List<string> fenList, ReplayView view)
+    public class ReplayController : IController
     {
-        this.model = new ReplayModel(fenList);
-        this.view = view;
-        this.board = new ReplayBoard(model.GetCurrentFEN());
-    }
+        private readonly List<string> fenList;
+        private readonly ReplayView view;
+        private ReplayBoard currentBoard;
+        private int currentMoveIndex;
 
-    public void Run()
-    {
-        bool exit = false;
-        while (!exit)
+        public ReplayController(List<string> fenList, ReplayView view)
         {
-            board = new ReplayBoard(model.GetCurrentFEN());
-            view.RenderBoard(board);
+            this.fenList = fenList;
+            this.view = view;
+            this.currentMoveIndex = 0;
+            this.currentBoard = new ReplayBoard(fenList[0]);
+        }
 
-            var key = Console.ReadKey(true).Key;
-            switch (key)
+        public void Run()
+        {
+            bool isRunning = true;
+
+            while (isRunning)
             {
-                case ConsoleKey.RightArrow:
-                    if (!model.NextMove())
-                        Console.WriteLine("You are at the last move.");
-                    break;
-                case ConsoleKey.LeftArrow:
-                    if (!model.PreviousMove())
-                        Console.WriteLine("You are at the first move.");
-                    break;
-                case ConsoleKey.Backspace:
-                    exit = true;
-                    break;
-                default:
-                    Console.WriteLine("Invalid input.");
-                    break;
+                view.RenderBoard(currentBoard);
+                view.DisplayNavigationOptions();
+
+                ConsoleKeyInfo keyInfo = view.GetUserInput();
+
+                switch (keyInfo.Key)
+                {
+                    case ConsoleKey.RightArrow:
+                        if (currentMoveIndex < fenList.Count - 1)
+                        {
+                            currentMoveIndex++;
+                            currentBoard = new ReplayBoard(fenList[currentMoveIndex]);
+                        }
+                        break;
+
+                    case ConsoleKey.LeftArrow:
+                        if (currentMoveIndex > 0)
+                        {
+                            currentMoveIndex--;
+                            currentBoard = new ReplayBoard(fenList[currentMoveIndex]);
+                        }
+                        break;
+
+                    case ConsoleKey.Backspace:
+                        isRunning = false;
+                        break;
+                }
             }
         }
     }
