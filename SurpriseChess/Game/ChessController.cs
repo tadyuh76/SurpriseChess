@@ -46,13 +46,18 @@ internal class ChessController : IController
 
             // Record the FEN of the current board state
             string currentFEN = FEN.FEN.GetFEN(model.Board, model.GameState);
-            match?.HistoryFEN.Add(currentFEN); // Store the FEN in the match history
+
+            // Use AddFEN with a list of FEN strings (even if it's just one FEN string here)
+            match?.AddFEN(new List<string> { currentFEN });
 
             ListenKeyStroke(); // Lắng nghe phím bấm
 
         }
         // When the game finishes, save the match result and export the history
         match.Result = model.Result.ToString();
+        //remove duplicated FEN string
+        List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match?.HistoryFEN);
+
         MatchHistoryManager.SaveMatch(match); // Export the match to file using your MatchHistoryManager
     }
 

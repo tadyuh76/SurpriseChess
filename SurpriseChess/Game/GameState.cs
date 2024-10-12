@@ -7,6 +7,8 @@ public class GameState
     public Position? EnPassantPosition { get; private set; } // Vị trí en passant nếu có
     public Dictionary<PieceColor, Dictionary<CastleDirection, bool>> CanCastle { get; private set; } // Quyền nhập thành
     private readonly Board board; // Bàn cờ
+    public int HalfMoveClock { get; private set; }
+    public int FullMoveNumber { get; private set; }
 
     // Khởi tạo GameState với bàn cờ
     public GameState(Board board)
@@ -14,17 +16,21 @@ public class GameState
         CurrentPlayerColor = PieceColor.White; // Người chơi đầu tiên là trắng
         CanCastle = ChessUtils.InitialCastlingRights; // Quyền nhập thành ban đầu
         this.board = board;
+        HalfMoveClock = 0;
+        FullMoveNumber = 1;
     }
 
-    // Cập nhật trạng thái sau mỗi nước đi
     public void UpdateStateAfterMove(Position source, Position destination)
     {
         Piece? pieceAtSource = board.GetPieceAt(source);
+        Piece? pieceAtDestination = board.GetPieceAt(destination);
+
         if (pieceAtSource == null) throw new InvalidOperationException("Không có quân cờ ở vị trí nguồn");
 
-        UpdateEnPassantRights(pieceAtSource, source, destination); // Cập nhật quyền en passant
-        UpdateCastlingRights(pieceAtSource, source); // Cập nhật quyền nhập thành
-        SwitchPlayer(); // Chuyển lượt người chơi
+        UpdateEnPassantRights(pieceAtSource, source, destination);
+        UpdateCastlingRights(pieceAtSource, source);
+        UpdateMoveCounters(pieceAtSource, pieceAtDestination);
+        SwitchPlayer();
     }
 
     // Cập nhật quyền nhập thành dựa vào nước đi
@@ -60,6 +66,23 @@ public class GameState
         EnPassantPosition = isPawnDoubleMove
             ? new Position((source.Row + destination.Row) / 2, source.Col)
             : null;
+    }
+
+    private void UpdateMoveCounters(Piece movingPiece, Piece? capturedPiece)
+    {
+        if (movingPiece.Type == PieceType.Pawn || capturedPiece != null)
+        {
+            HalfMoveClock = 0;
+        }
+        else
+        {
+            HalfMoveClock++;
+        }
+
+        if (CurrentPlayerColor == PieceColor.Black)
+        {
+            FullMoveNumber++;
+        }
     }
 
     // Chuyển lượt cho người chơi

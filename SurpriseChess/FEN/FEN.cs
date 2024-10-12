@@ -25,8 +25,26 @@ namespace SurpriseChess.FEN
 
         public static string GetFEN(IBoardView board, GameState gameState)
         {
-            int halfMoveClock = 0, fullMoveClock = 0;
             // Generate the board part of the FEN
+            string fen = GenerateBoardFEN(board);
+
+            // Add active color
+            fen += $" {(gameState.CurrentPlayerColor == PieceColor.White ? 'w' : 'b')}";
+
+            // Add castling rights
+            fen += $" {GetCastlingRights(gameState)}";
+
+            // Add en passant position
+            fen += gameState.EnPassantPosition == null ? " -" : $" {PositionToFEN(gameState.EnPassantPosition)}";
+
+            // Add halfmove clock and fullmove number
+            fen += $" {gameState.HalfMoveClock} {gameState.FullMoveNumber}";
+
+            return fen;
+        }
+
+        private static string GenerateBoardFEN(IBoardView board)
+        {
             string fen = "";
             for (int row = 7; row >= 0; row--)
             {
@@ -54,49 +72,23 @@ namespace SurpriseChess.FEN
                 }
                 if (row > 0) fen += "/";  // Add a slash between rows
             }
+            return fen;
+        }
 
-            // Add active color
-            fen += $" {(gameState.CurrentPlayerColor == PieceColor.White ? 'w' : 'b')}";
-
-            // Add castling rights
+        private static string GetCastlingRights(GameState gameState)
+        {
             string castlingRights = "";
             if (gameState.CanCastle[PieceColor.White][CastleDirection.KingSide]) castlingRights += "K";
             if (gameState.CanCastle[PieceColor.White][CastleDirection.QueenSide]) castlingRights += "Q";
             if (gameState.CanCastle[PieceColor.Black][CastleDirection.KingSide]) castlingRights += "k";
             if (gameState.CanCastle[PieceColor.Black][CastleDirection.QueenSide]) castlingRights += "q";
-            if (castlingRights == "") castlingRights = "-";
-            fen += $" {castlingRights}";
-
-            // Add en passant position
-            fen += gameState.EnPassantPosition == null ? " -" : $" {PositionToFEN(gameState.EnPassantPosition)}";
-
-            // Add arbitrary values for halfmove clock and fullmove number
-            if (gameState.CurrentPlayerColor == PieceColor.White)
-            {
-                halfMoveClock++;
-            }
-
-            fen += $" {halfMoveClock}";
-            fen += $" {++fullMoveClock}";
-
-            return fen;
-        }
-
-        public static Position FENToPosition(string fenSquare)
-        {
-            char file = fenSquare[0]; // The letter part (a-h)
-            char rank = fenSquare[1]; // The number part (1-8)
-            int col = file - 'a';  // Convert file (column) from 'a'-'h' to 0-7
-            int row = rank - '1';  // Convert rank (row) from '1'-'8' to 0-7
-
-            return new Position(row, col);
+            return castlingRights == "" ? "-" : castlingRights;
         }
 
         public static string PositionToFEN(Position position)
         {
             char file = (char)('a' + position.Col);  // Convert column from 0-7 to 'a'-'h'
             char rank = (char)('1' + position.Row);  // Convert row from 0-7 to '1'-'8'
-
             return $"{file}{rank}";
         }
 
