@@ -8,9 +8,9 @@ namespace SurpriseChess.MatchHistory
 {
     public static class MatchHistoryManager
     {
-        private static readonly string FilePath = "match_history.txt"; // Path for the saved history
+        private static readonly string FilePath = "match_history.txt"; // đường dẫn cho file save
 
-        // Save the match history to a file
+        // Lưu trận đấu vào trong một file
         public static void SaveMatch(Match match)
         {
             using (StreamWriter writer = new StreamWriter(FilePath, true))
@@ -25,11 +25,11 @@ namespace SurpriseChess.MatchHistory
                     writer.WriteLine(fen);
                 }
 
-                writer.WriteLine();  // Blank line to separate matches
+                writer.WriteLine();  // Dòng trống để ngắt giữa các trận khác nhau
             }
         }
 
-        // Load all matches from the saved history
+        // Load lịch sử trên đơn vị từng trận
         public static List<Match> LoadMatches()
         {
             var matches = new List<Match>();
@@ -73,7 +73,7 @@ namespace SurpriseChess.MatchHistory
                         }
                         else if (!string.IsNullOrWhiteSpace(line))
                         {
-                            fens.Add(line);  // FEN notation line
+                            fens.Add(line);  // thêm dòng FEN
                         }
                     }
 

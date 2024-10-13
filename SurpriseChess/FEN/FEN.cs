@@ -25,19 +25,19 @@ namespace SurpriseChess.FEN
 
         public static string GetFEN(IBoardView board, GameState gameState)
         {
-            // Generate the board part of the FEN
+            // Tạo string phần bảng của FEN
             string fen = GenerateBoardFEN(board);
 
-            // Add active color
+            // Thêm trạng thái lượt người chơi hiện tại
             fen += $" {(gameState.CurrentPlayerColor == PieceColor.White ? 'w' : 'b')}";
 
-            // Add castling rights
+            // Thêm trạng thái quyền nhập thành
             fen += $" {GetCastlingRights(gameState)}";
 
-            // Add en passant position
+            // Thêm vị trí en passant được
             fen += gameState.EnPassantPosition == null ? " -" : $" {PositionToFEN(gameState.EnPassantPosition)}";
 
-            // Add halfmove clock and fullmove number
+            // Thêm số đếm HalfMove và FullMove
             fen += $" {gameState.HalfMoveClock} {gameState.FullMoveNumber}";
 
             return fen;
@@ -70,7 +70,7 @@ namespace SurpriseChess.FEN
                 {
                     fen += emptyCount.ToString();
                 }
-                if (row > 0) fen += "/";  // Add a slash between rows
+                if (row > 0) fen += "/";  // thêm "/" giữa các dòng bàn cờ
             }
             return fen;
         }
@@ -87,8 +87,8 @@ namespace SurpriseChess.FEN
 
         public static string PositionToFEN(Position position)
         {
-            char file = (char)('a' + position.Col);  // Convert column from 0-7 to 'a'-'h'
-            char rank = (char)('1' + position.Row);  // Convert row from 0-7 to '1'-'8'
+            char file = (char)('a' + position.Col);  // Convert cột từ 0-7 sang a-h
+            char rank = (char)('1' + position.Row);  // Convert dòng từ 0-7 sang 1-8
             return $"{file}{rank}";
         }
 
@@ -105,7 +105,7 @@ namespace SurpriseChess.FEN
                 {
                     if (char.IsDigit(symbol))
                     {
-                        col += symbol - '0'; // Empty squares
+                        col += symbol - '0'; // Ô bàn cờ trống
                     }
                     else
                     {
@@ -133,7 +133,7 @@ namespace SurpriseChess.FEN
                 'R' => PieceType.Rook,
                 'Q' => PieceType.Queen,
                 'K' => PieceType.King,
-                _ => throw new ArgumentException("Invalid piece symbol")
+                _ => throw new ArgumentException("Ký hiệu quân cờ không hợp lệ")
             };
         }
 
@@ -171,7 +171,7 @@ namespace SurpriseChess.FEN
 
                 if (!isInDesiredMatch)
                 {
-                    throw new ArgumentException($"Match ID {matchId} not found in the file.");
+                    throw new ArgumentException($"ID trận {matchId} không thể tìm được trong file.");
                 }
 
                 return fenList;

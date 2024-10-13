@@ -23,11 +23,11 @@
         {
             string[] fenParts = fenHistory[i].Split(' ');
 
-            // Update half-move clock
+            // Cập nhật số đếm half move
             int halfMoveClock = i == 0 ? 0 : int.Parse(fenParts[4]) + 1;
             fenParts[4] = halfMoveClock.ToString();
 
-            // Update full-move number
+            // Cập nhật số đếm full move
             int fullMoveNumber = (i / 2) + 1;
             fenParts[5] = fullMoveNumber.ToString();
 

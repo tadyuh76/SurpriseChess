@@ -20,13 +20,12 @@ internal class ChessController : IController
         this.view = view;   // Khởi tạo View
         this.gameMode = gameMode; // Chế độ chơi
         this.difficultyLevel = difficultyLevel; // Mức độ khó
-                                                // Initialize match with FEN history (empty at start)
+
         match = new Match
         {
-            
             MatchDate = DateTime.Now,
-            HistoryFEN = new List<string>(), // Initialize with an empty list
-            Result = "InProgress" // Initial match result
+            HistoryFEN = new List<string>(), // Khởi tạo danh sách trống ban đầu
+            Result = "InProgress" // Trạng thái trận đấu ban đầu
         };
     }
 
@@ -44,21 +43,21 @@ internal class ChessController : IController
 
             view.Render(board, selectedPosition, highlightedMoves, currentPlayerColor, cursorX, cursorY); // Vẽ bàn cờ
 
-            // Record the FEN of the current board state
+            // Ghi lại FEN của trạng thái bàn cờ hiện tại
             string currentFEN = FEN.FEN.GetFEN(model.Board, model.GameState);
 
-            // Use AddFEN with a list of FEN strings (even if it's just one FEN string here)
+            // Sử dụng AddFEN với một danh sách FEN (dù chỉ là một FEN ở đây)
             match?.AddFEN(new List<string> { currentFEN });
 
             ListenKeyStroke(); // Lắng nghe phím bấm
 
         }
-        // When the game finishes, save the match result and export the history
+        // Khi trò chơi kết thúc, lưu kết quả và xuất lịch sử
         match.Result = model.Result.ToString();
-        //remove duplicated FEN string
+        // Loại bỏ các chuỗi FEN trùng lặp
         List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match?.HistoryFEN);
 
-        MatchHistoryManager.SaveMatch(match); // Export the match to file using your MatchHistoryManager
+        MatchHistoryManager.SaveMatch(match); // Xuất trận đấu ra file bằng cách sử dụng MatchHistoryManager
     }
 
     // Lắng nghe các phím bấm
@@ -99,7 +98,7 @@ internal class ChessController : IController
 
     private void HandleNavigateBack()
     {
-        // Yêu cầu người dung xác nhận thoát trò chơi
+        // Yêu cầu người dùng xác nhận thoát trò chơi
         ConsoleKey keyPressed;
 
         keyPressed = Console.ReadKey().Key;

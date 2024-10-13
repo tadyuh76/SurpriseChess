@@ -16,13 +16,13 @@ public class Match
 
         do
         {
-            Id = random.Next(1000, 10000); // Generate a 4-digit number
+            Id = random.Next(1000, 10000); // tạo id random 4 chữ số
         } while (MatchHistoryModel.usedIds.Contains(Id));
 
-        MatchHistoryModel.usedIds.Add(Id); // Mark the ID as used
+        MatchHistoryModel.usedIds.Add(Id); // đánh dấu là id đã dc dùng
     }
 
-    // Method to add FEN strings, ensuring no duplicates
+    // Method để thêm string FEN và ko cho lặp lại
     public void AddFEN(List<string> newFENs)
     {
         foreach (var fen in newFENs)
@@ -32,11 +32,5 @@ public class Match
                 HistoryFEN.Add(fen);
             }
         }
-    }
-
-    // Save the match to a text file
-    public void SaveToFile(string filePath)
-    {
-        File.WriteAllLines(filePath, HistoryFEN);
     }
 }

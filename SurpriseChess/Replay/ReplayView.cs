@@ -9,7 +9,7 @@ namespace SurpriseChess
         {
             Console.Clear();
 
-            // Render the board
+            // Render bảng
             for (int row = 0; row < 8; row++)
             {
                 for (int col = 0; col < 8; col++)
@@ -21,7 +21,7 @@ namespace SurpriseChess
                 Console.WriteLine();
             }
 
-            // Print descriptions
+            // In ra miêu tả từng quân cở
             PrintDescription();
         }
 
@@ -65,10 +65,10 @@ namespace SurpriseChess
 
         public void DisplayNavigationOptions()
         {
-            Console.WriteLine("\nNavigation:");
-            Console.WriteLine("Right Arrow (→) - Next Move");
-            Console.WriteLine("Left Arrow (←) - Previous Move");
-            Console.WriteLine("Backspace - Exit Replay");
+            Console.WriteLine("\nĐiều khiển:");
+            Console.WriteLine("Mũi tên phải (→) - Nước đi tiếp theo");
+            Console.WriteLine("Mũi tên trái (←) - Nước đi trước");
+            Console.WriteLine("Backspace - Thoát replay");
         }
 
         public ConsoleKeyInfo GetUserInput()

@@ -1,4 +1,4 @@
-using SurpriseChess.FEN;
+﻿using SurpriseChess.FEN;
 using SurpriseChess;
 
 public class MatchHistoryController : IController
@@ -29,11 +29,11 @@ public class MatchHistoryController : IController
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error loading match: {ex.Message}");
+                    Console.WriteLine($"Lỗi load trận: {ex.Message}");
                     return;
                 }
 
-                var replayBoard = new ReplayBoard(fenList[0]); // Start with the first move's FEN
+                var replayBoard = new ReplayBoard(fenList[0]); // bắt đầu với string FEN đầu tiên
                 var replayView = new ReplayView();
                 var replayController = new ReplayController(fenList, replayView);
                 ScreenManager.Instance.NavigateToScreen(replayController);
