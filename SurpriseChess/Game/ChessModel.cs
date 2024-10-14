@@ -1,4 +1,6 @@
-﻿namespace SurpriseChess;
+﻿using System.Diagnostics;
+
+namespace SurpriseChess;
 
 public class ChessModel
 {

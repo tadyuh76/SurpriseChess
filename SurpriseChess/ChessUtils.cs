@@ -40,8 +40,8 @@ public static class ChessUtils
     {
         [PieceType.King] = new Dictionary<CastleDirection, int>
         {
-            [CastleDirection.KingSide] = 6,  // Vị trí cột của tướng bên cánh vua
-            [CastleDirection.QueenSide] = 2  // Vị trí cột của tướng bên cánh hậu
+            [CastleDirection.KingSide] = 6,  // Vị trí cột của vua bên cánh vua
+            [CastleDirection.QueenSide] = 2  // Vị trí cột của vua bên cánh hậu
         },
         [PieceType.Rook] = new Dictionary<CastleDirection, int>
         {
