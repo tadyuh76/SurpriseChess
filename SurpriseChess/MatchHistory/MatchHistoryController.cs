@@ -33,7 +33,7 @@ public class MatchHistoryController : IController
 
                 // for placeholder
                 ChessController chessController = new ChessController(
-                    new ChessModel(new Chess960(), null),
+                    new ChessModel(new Chess960()),
                     new ChessView(),
                     GameMode.PlayerVsPlayer,
                     null

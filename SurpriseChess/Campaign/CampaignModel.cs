@@ -13,19 +13,20 @@ public class CampaignModel
 
     private List<CampaignNode> CreateCampaignNodes()
     {
-      // Tạo 10 nodes với các ID từ 'A' đến 'J', độ khó tăng dần và số moves tương ứng
-        var nodes = new List<CampaignNode>();
-
-        for (int i = 0; i < 10; i++)
+        // Create 10 nodes with IDs from 'A' to 'J' and varying difficulty levels
+        return new List<CampaignNode>
         {
-            char id = (char)('A' + i); // Tạo ID từ 'A' đến 'J'
-            int difficulty = i + 1;    // Độ khó từ 1 đến 10
-            int numMoves = i + 1;      // Số move cũng từ 1 đến 10
-
-            nodes.Add(new CampaignNode(id, difficulty, numMoves));
-        }
-
-        return nodes;
+            new CampaignNode('A', 1),
+            new CampaignNode('B', 2),
+            new CampaignNode('C', 3),
+            new CampaignNode('D', 4),
+            new CampaignNode('E', 5),
+            new CampaignNode('F', 6),
+            new CampaignNode('G', 7),
+            new CampaignNode('H', 8),
+            new CampaignNode('I', 9),
+            new CampaignNode('N', 10)
+        };
     }
 
     public void MoveUp()
@@ -36,10 +37,5 @@ public class CampaignModel
     public void MoveDown()
     {
         if (CurrentNodeIndex < Nodes.Count - 1) CurrentNodeIndex++;
-    }
-
-    public CampaignNode GetCurrentNode()
-    {
-        return Nodes[CurrentNodeIndex];
     }
 }
