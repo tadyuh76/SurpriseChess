@@ -6,7 +6,7 @@ public class MatchHistoryView
     public void RenderMatchList(List<Match> matches)
     {
         Console.Clear();
-        Console.WriteLine("Match History:");
+        Console.WriteLine("Lịch sử trận đấu:");
         foreach (var match in matches)
         {
             Console.WriteLine($"{match.Id}: {match.Result} on {match.MatchDate.ToShortDateString()}");

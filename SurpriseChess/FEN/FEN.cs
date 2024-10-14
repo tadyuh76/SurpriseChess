@@ -46,7 +46,7 @@ namespace SurpriseChess.FEN
         private static string GenerateBoardFEN(IBoardView board)
         {
             string fen = "";
-            for (int row = 7; row >= 0; row--)
+            for (int row = 0; row < 8; row++)
             {
                 int emptyCount = 0;
                 for (int col = 0; col < 8; col++)

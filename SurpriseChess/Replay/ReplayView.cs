@@ -48,8 +48,8 @@ namespace SurpriseChess
         private void PrintDescription()
         {
             int currentLine = 0;
-            PrintPieceDescription("White", ChessUtils.WhitePieceEmojis, ref currentLine);
-            PrintPieceDescription("Black", ChessUtils.BlackPieceEmojis, ref currentLine);
+            PrintPieceDescription("Trắng", ChessUtils.WhitePieceEmojis, ref currentLine);
+            PrintPieceDescription("Đen", ChessUtils.BlackPieceEmojis, ref currentLine);
         }
 
         private void PrintPieceDescription(string pieceName, Dictionary<string, string> emojisDict, ref int currentLine)

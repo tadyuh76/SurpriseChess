@@ -54,7 +54,7 @@ internal class ChessController : IController
         }
         // Khi trò chơi kết thúc, lưu kết quả và xuất lịch sử
         match.Result = model.Result.ToString();
-        // Loại bỏ các chuỗi FEN trùng lặp
+        // Loại bỏ các chuỗi FEN trùng lặp vaf
         List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match?.HistoryFEN);
 
         MatchHistoryManager.SaveMatch(match); // Xuất trận đấu ra file bằng cách sử dụng MatchHistoryManager
