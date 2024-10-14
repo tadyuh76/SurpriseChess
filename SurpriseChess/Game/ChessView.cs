@@ -77,11 +77,6 @@ internal class ChessView
             // Nếu là ô đang được chọn, tô nền màu đỏ
             Console.BackgroundColor = ConsoleColor.Red;
         }
-        else if ((position.Row + position.Col) % 2 == 0)
-        {
-            // Nếu là ô sáng, tô nền màu xám
-            Console.BackgroundColor = ConsoleColor.Gray;
-        }
         else if (isParalyzed)
         {
             // Nếu bị tê liệt, tô nền màu hồng đậm
@@ -92,6 +87,12 @@ internal class ChessView
             // Nếu được bảo vệ, tô nên xanh nhạt
             Console.BackgroundColor = ConsoleColor.Cyan;
         }
+        else if ((position.Row + position.Col) % 2 == 0)
+        {
+            // Nếu là ô sáng, tô nền màu xám
+            Console.BackgroundColor = ConsoleColor.Gray;
+        }
+        
         else
         {
             // Nếu là ô tối, tô nền màu xám đậm
