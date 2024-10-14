@@ -6,8 +6,9 @@ public class ChessModel
     private readonly IBoardSetup boardSetup;
     // private readonly IChessBot chessBot;
     private Arbiter arbiter = null!;
-    // private EffectApplier effectApplier = null!;
+    private EffectApplier effectApplier = null!;
     private readonly Random random = new();
+
 
     public GameMode GameMode { get; private set; }
     public GameState GameState { get; private set; } = null!;
@@ -31,6 +32,8 @@ public class ChessModel
         arbiter = new Arbiter(Board, GameState);
         SelectedPosition = null;
         HighlightedMoves = new HashSet<Position>();
+        effectApplier = new EffectApplier(Board);
+
     }
 
     // Chọn một quân cờ tại vị trí cho trước và làm nổi bật các nước đi hợp lệ.
@@ -56,8 +59,9 @@ public class ChessModel
         Board.MakeMove(SelectedPosition, destination);
 
         // Gắn hiệu ứng bất ngờ vào bàn cờ
-        //effectApplier.ClearEffects();
-        //effectApplier.ApplyEffects(destination);
+        effectApplier.ClearEffects();
+        effectApplier.ApplyEffects(destination);
+        
 
         Result = arbiter.GetGameResult(GameState.CurrentPlayerColor);
         Deselect();

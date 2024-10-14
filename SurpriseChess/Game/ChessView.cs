@@ -32,22 +32,35 @@ internal class ChessView
     private void DrawSquare(Board board, Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
     {
         // Thiết lập màu nền cho ô cờ dựa trên trạng thái của nó
-        SetSquareBackgroundColor(position, selectedPosition, highlightedMoves, cursorX, cursorY);
+        SetSquareBackgroundColor(board, position, selectedPosition, highlightedMoves, cursorX, cursorY);
 
         // Hiển thị quân cờ hoặc khoảng trống nếu không có quân cờ
         Piece? piece = board.GetPieceAt(position);
-        Console.Write($" {piece?.DisplaySymbol ?? "  "} ");
+        if (piece != null && piece.IsInvisible == true)
+        {
+            Console.Write("    ");
+        }
+        else
+        {
+            Console.Write($" {piece?.DisplaySymbol ?? "  "} ");
+        }
+        
     }
 
     // Phương thức hỗ trợ để thiết lập màu nền của ô cờ
-    private void SetSquareBackgroundColor(Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
+    private void SetSquareBackgroundColor(Board board,Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
     {
+        Piece? piece = board.GetPieceAt(position);
         // Kiểm tra xem con trỏ hiện tại có nằm trên ô này không
         bool isCursor = (position.Col == cursorX && position.Row == cursorY);
         // Kiểm tra xem ô này có phải là một nước đi hợp lệ được đánh dấu không
         bool isHighlighted = highlightedMoves.Contains(position);
         // Kiểm tra xem ô này có phải là ô đang được chọn không
         bool isSelected = (selectedPosition == position);
+        // Kiểm tra xem ô này có bị tê liệt không
+        bool isParalyzed = piece != null && piece.IsParalyzed == true;
+        // Kiểm tra xem ô này có được bảo vệ không
+        bool isShielded = piece != null && piece.IsShielded == true;
 
         if (isCursor)
         {
@@ -68,6 +81,16 @@ internal class ChessView
         {
             // Nếu là ô sáng, tô nền màu xám
             Console.BackgroundColor = ConsoleColor.Gray;
+        }
+        else if (isParalyzed)
+        {
+            // Nếu bị tê liệt, tô nền màu hồng đậm
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+        }
+        else if (isShielded)
+        {
+            // Nếu được bảo vệ, tô nên xanh nhạt
+            Console.BackgroundColor = ConsoleColor.Cyan;
         }
         else
         {
