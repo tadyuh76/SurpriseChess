@@ -51,6 +51,8 @@ internal class ChessController : IController
     // Xử lý nhấp chuột vào ô
     private void HandleBoardClick(Position clickedSquare)
     {
+        if (model.IsBotsTurn) return;  // Không cho người chơi click nếu là lượt của bot
+
         // Nếu nhấp vào nước đi hợp lệ, di chuyển đến đó
         if (model.HighlightedMoves.Contains(clickedSquare))
         {

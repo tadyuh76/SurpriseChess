@@ -44,13 +44,14 @@ public class CampaignController : IController
     private void StartSelectedCampaign()
     {
         var selectedNode = model.Nodes[model.CurrentNodeIndex];
-        Console.WriteLine($"\nStarting game at node {selectedNode.Id} with difficulty {selectedNode.Difficulty}...");
+        Console.WriteLine($"\nBắt đầu game tại  {selectedNode.Id} với độ khó  {selectedNode.Difficulty}...");
+        IChessBot chessBot = new StockFish(selectedNode.Difficulty);
 
         // for placeholder
         ChessController chessController = new ChessController(
-            new ChessModel(new Chess960()),
+            new ChessModel(new Chess960(),chessBot),
             new ChessView(),
-            GameMode.PlayerVsPlayer,
+            GameMode.PlayerVsBot,
             selectedNode.Difficulty
         );
         chessController.Run();
