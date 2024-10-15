@@ -34,14 +34,16 @@ internal class ChessView
         // Thiết lập màu nền cho ô cờ dựa trên trạng thái của nó
         SetSquareBackgroundColor(board, position, selectedPosition, highlightedMoves, cursorX, cursorY);
 
-        // Hiển thị quân cờ hoặc khoảng trống nếu không có quân cờ
+       
         Piece? piece = board.GetPieceAt(position);
+        //Nếu quân cờ không phải là khoảng trống và hiệu ứng toàn hình được áp dụng
         if (piece != null && piece.IsInvisible == true)
         {
             Console.Write("    ");
         }
         else
         {
+            // Hiển thị quân cờ hoặc khoảng trống nếu không có quân cờ
             Console.Write($" {piece?.DisplaySymbol ?? "  "} ");
         }
         
