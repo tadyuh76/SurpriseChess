@@ -1,97 +1,87 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SurpriseChess.Game
 {
     public class ChessTimer
     {
-        private TimeSpan player1Time;
-        private TimeSpan player2Time;
+        private TimeSpan whiteTime;
+        private TimeSpan blackTime;
         private CancellationTokenSource cancellationTokenSource;
+        private int currentPlayer; // 1: White, 2: Black
 
-        public event Action<int> TimeExpired; // Event to notify when time expires
+        public event Action<int> TimeExpired; // Sự kiện khi thời gian hết
+        public event Action<int, TimeSpan> TimeUpdated; // Sự kiện khi thời gian cập nhật
 
         public ChessTimer(TimeSpan initialTime)
         {
-            player1Time = initialTime;
-            player2Time = initialTime;
+            whiteTime = initialTime;
+            blackTime = initialTime;
+            currentPlayer = 1;
         }
-        public void StartPlayer1Timer()
-        {
 
-            StopTimer(); // Stop any running timer
+        public void StartTimer(int player)
+        {
+            StopTimer(); // Dừng bất kỳ timer nào đang chạy
 
             cancellationTokenSource = new CancellationTokenSource();
-            StartTimer(1, cancellationTokenSource.Token);
+            currentPlayer = player;
+            StartTimerInternal(player, cancellationTokenSource.Token);
         }
 
-        public void StartPlayer2Timer()
+        private async void StartTimerInternal(int player, CancellationToken cancellationToken)
         {
-
-            StopTimer(); // Stop any running timer
-
-            cancellationTokenSource = new CancellationTokenSource();
-            StartTimer(2, cancellationTokenSource.Token);
-        }
-
-
-        private async void StartTimer(int player, CancellationToken cancellationToken)
-        {
-            while (!cancellationToken.IsCancellationRequested) // Check for cancellation
+            try
             {
-
-                await Task.Delay(1000, cancellationToken); // Wait 1 second
-                if (player == 1)
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    player1Time = player1Time.Subtract(TimeSpan.FromSeconds(1));
+                    await Task.Delay(1000, cancellationToken); // Chờ 1 giây
 
-                    if (player1Time <= TimeSpan.Zero)
+                    if (player == 1)
                     {
+                        whiteTime = whiteTime.Subtract(TimeSpan.FromSeconds(1));
+                        TimeUpdated?.Invoke(1, whiteTime);
 
-                        TimeExpired?.Invoke(1);
-                        StopTimer();
-                        break;
+                        if (whiteTime <= TimeSpan.Zero)
+                        {
+                            TimeExpired?.Invoke(1);
+                            StopTimer();
+                            break;
+                        }
                     }
-
-
-                }
-
-                else
-                {
-                    player2Time = player2Time.Subtract(TimeSpan.FromSeconds(1));
-                    if (player2Time <= TimeSpan.Zero)
+                    else
                     {
-                        TimeExpired?.Invoke(2);
-                        StopTimer();
-                        break;
+                        blackTime = blackTime.Subtract(TimeSpan.FromSeconds(1));
+                        TimeUpdated?.Invoke(2, blackTime);
 
+                        if (blackTime <= TimeSpan.Zero)
+                        {
+                            TimeExpired?.Invoke(2);
+                            StopTimer();
+                            break;
+                        }
                     }
                 }
-
             }
-
-
+            catch (TaskCanceledException)
+            {
+                // Bỏ qua ngoại lệ hủy bỏ
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi trong StartTimerInternal: {ex.Message}");
+            }
         }
-
-
 
         public void StopTimer()
         {
             cancellationTokenSource?.Cancel();
-
         }
 
+        public TimeSpan GetWhiteTime() => whiteTime;
+        public TimeSpan GetBlackTime() => blackTime;
 
-
-
-        public TimeSpan GetPlayer1Time() => player1Time;
-        public TimeSpan GetPlayer2Time() => player2Time;
-
-
-
-
+        public int GetCurrentPlayer() => currentPlayer;
     }
 }

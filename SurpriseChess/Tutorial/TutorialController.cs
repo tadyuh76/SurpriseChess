@@ -1,4 +1,4 @@
-namespace SurpriseChess;
+﻿namespace SurpriseChess;
 
 class TutorialController : IController
 {
@@ -20,34 +20,24 @@ class TutorialController : IController
             view.Render();
             keyPressed = Console.ReadKey().Key;
 
-            switch (keyPressed)
-            {
-                case ConsoleKey.UpArrow:
-                    MoveUp();
-                    break;
-                case ConsoleKey.DownArrow:
-                    MoveDown();
-                    break;
-                /*case ConsoleKey.Enter:
-                    SelectOption();
-                    break;*/
-            }
+            if (keyPressed == ConsoleKey.Backspace) HandleNavigateBack();
         }
     }
-    private void MoveUp()
+    private void HandleNavigateBack()
     {
-        model.SelectedIndex1--;
-        if (model.SelectedIndex1 < 0)
+        // Yêu cầu người dung xác nhận thoát trò chơi
+        ConsoleKey keyPressed;
+
+        keyPressed = Console.ReadKey().Key;
+
+        if (keyPressed == ConsoleKey.Backspace)
         {
-            model.SelectedIndex1 = model.Options1.Length - 1;
+            // Trở về màn hình chính
+            ScreenManager.Instance.NavigateToScreen(new HomeController(
+                new HomeModel(),
+                new HomeView()
+            ));
         }
-    }
-    private void MoveDown()
-    {
-        model.SelectedIndex1++;
-        if (model.SelectedIndex1 >= model.Options1.Length)
-        {
-            model.SelectedIndex1 = 0;
-        }
+
     }
 }

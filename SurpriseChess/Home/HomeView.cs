@@ -1,5 +1,6 @@
 ﻿namespace SurpriseChess;
 using System;
+using System.Diagnostics;
 using System.Text;
 
 public class HomeView
@@ -9,23 +10,22 @@ public class HomeView
         Console.Clear();
         int consoleWidth = Console.WindowWidth; // Sử dụng chiều rộng bảng điều khiển động
         Console.CursorVisible = false; // Giấu con trỏ
+        int originalTop = Console.CursorTop;
+        DrawAtCursor(25, originalTop, @" ____                        _          
+/ ___| _   _ _ __ _ __  _ __(_)___  ___ 
+\___ \| | | | '__| '_ \| '__| / __|/ _ \
+ ___) | |_| | |  | |_) | |  | \__ \  __/
+|____/ \__,_|_|  | .__/|_|  |_|___/\___|
+                 |_|                    ", ConsoleColor.Cyan);
 
-        DrawCenteredText(consoleWidth, @" ____                        _           
-/ ___| _   _ _ __ _ __  _ __(_)___  ___  
-\___ \| | | | '__| '_ \| '__| / __|/ _ \ 
- ___) | |_| | |  | |_) | |  | \__ \  __/ 
-|____/ \__,_|_|  | .__/|_|  |_|___/\___| 
-                 |_|                     ", ConsoleColor.Cyan);
-
-       /* DrawCenteredText(consoleWidth, @"  ____ _                   
+        DrawAtCursor(67, originalTop, @"  ____ _                   
  / ___| |__   ___  ___ ___ 
 | |   | '_ \ / _ \/ __/ __|
 | |___| | | |  __/\__ \__ \
- \____|_| |_|\___||___/___/", ConsoleColor.Yellow);*/
-        //Console.WriteLine();
+ \____|_| |_|\___||___/___/", ConsoleColor.Yellow);
+        Console.WriteLine(new string('\n', 2));
 
         int maxOptionWidth = model.Options.Max(option => option.Length) + 2; // Correct calculation
-
         int consoleHeight = Console.WindowHeight;
         int topOffset = (consoleHeight - model.Options.Length * 3) / 2; // Correct top offset calculation (outside loop)
 
@@ -33,12 +33,10 @@ public class HomeView
         for (int i = 0; i < model.Options.Length; i++)
         {
             string option = model.Options[i];
-            string prefix = (i == model.SelectedIndex) ? ">" : "";
-            string line = $"{prefix}{option}";
-            //Console.ForegroundColor = (i == model.SelectedIndex) ? ConsoleColor.Green : ConsoleColor.White;
             string rectangleTop = $"┌{new string('─', maxOptionWidth)}┐";
+            
             // Correctly padded and centered line within the middle of the box:
-            string rectangleMiddle = $"│{new string(' ', Math.Max(0, (maxOptionWidth - option.Length) / 2))}{line}{new string(' ', Math.Max(0, (maxOptionWidth - option.Length + 1) / 2))}│";
+            string rectangleMiddle = $"│{new string(' ', Math.Max(0, (maxOptionWidth - option.Length) / 2))}{option}{new string(' ', Math.Max(0, (maxOptionWidth - option.Length + 1) / 2))}│";
             string rectangleBottom = $"└{new string('─', maxOptionWidth)}┘";
 
 
@@ -48,8 +46,8 @@ public class HomeView
             {
                 DrawCenteredText(consoleWidth, rectangleTop);
 
-                Console.ForegroundColor = (i == model.SelectedIndex) ? ConsoleColor.Green : ConsoleColor.White;
-                DrawCenteredText(consoleWidth, rectangleMiddle); // Draw the combined box and text
+                ConsoleColor foregroundColor = (i == model.SelectedIndex) ? ConsoleColor.Green : ConsoleColor.White;
+                DrawCenteredText(consoleWidth, rectangleMiddle, foregroundColor); // Draw the combined box and text
                 Console.ResetColor();
                 DrawCenteredText(consoleWidth, rectangleBottom);
             }
@@ -75,4 +73,19 @@ public class HomeView
         }
         Console.ResetColor();
     }
+    private void DrawAtCursor(int left, int top, string text, ConsoleColor color = ConsoleColor.Gray)
+    {
+        Console.ForegroundColor = color;
+        string[] lines = text.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+        int currentTop = top;
+
+        foreach (string line in lines)
+        {
+            Console.SetCursorPosition(left, currentTop);
+            Console.Write(line);
+            currentTop++;
+        }
+        Console.ResetColor();
+    }
+
 }
