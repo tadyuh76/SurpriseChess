@@ -34,7 +34,7 @@ public class CampaignController : IController
                     break;
                 case ConsoleKey.Backspace:
                     // Return to the home screen
-                    HandleNavigateBack();
+                    ScreenManager.Instance.BackToHomeScreen();
                     return;
             }
 
@@ -48,29 +48,11 @@ public class CampaignController : IController
 
         // for placeholder
         ChessController chessController = new ChessController(
-            new ChessModel(new Chess960()),
+            new ChessModel(new Chess960(), new StockFish()),
             new ChessView(),
             GameMode.PlayerVsPlayer,
             selectedNode.Difficulty
         );
         chessController.Run();
-    }
-
-    private void HandleNavigateBack()
-    {
-        // Yêu cầu người dung xác nhận thoát trò chơi
-        ConsoleKey keyPressed;
-
-        keyPressed = Console.ReadKey().Key;
-
-        if (keyPressed == ConsoleKey.Backspace)
-        {
-            // Trở về màn hình chính
-            ScreenManager.Instance.NavigateToScreen(new HomeController(
-                new HomeModel(),
-                new HomeView()
-            ));
-        }
-
     }
 }

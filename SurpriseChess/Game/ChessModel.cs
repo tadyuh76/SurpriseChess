@@ -6,7 +6,7 @@ public class ChessModel
 {
     public Board Board { get; private set; } = null!;
     private readonly IBoardSetup boardSetup;
-    // private readonly IChessBot chessBot;
+     private readonly IChessBot chessBot;
     private Arbiter arbiter = null!;
     private EffectApplier effectApplier = null!;
     private readonly Random random = new();
@@ -19,9 +19,10 @@ public class ChessModel
     public Position? SelectedPosition { get; private set; }
     public HashSet<Position> HighlightedMoves { get; private set; } = null!;
 
-    public ChessModel(IBoardSetup boardSetup)
+    public ChessModel(IBoardSetup boardSetup, IChessBot chessBot)
     {
         this.boardSetup = boardSetup; // Khởi tạo cấu hình bàn cờ.
+        this.chessBot = chessBot; // Khởi tạo chess bot.
     }
 
     // Bắt đầu một trò chơi mới với chế độ đã chỉ định.
