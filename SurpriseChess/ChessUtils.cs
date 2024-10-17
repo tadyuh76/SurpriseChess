@@ -40,8 +40,8 @@ public static class ChessUtils
     {
         [PieceType.King] = new Dictionary<CastleDirection, int>
         {
-            [CastleDirection.KingSide] = 6,  // Vị trí cột của tướng bên cánh vua
-            [CastleDirection.QueenSide] = 2  // Vị trí cột của tướng bên cánh hậu
+            [CastleDirection.KingSide] = 6,  // Vị trí cột của vua bên cánh vua
+            [CastleDirection.QueenSide] = 2  // Vị trí cột của vua bên cánh hậu
         },
         [PieceType.Rook] = new Dictionary<CastleDirection, int>
         {
@@ -68,23 +68,23 @@ public static class ChessUtils
     // Từ điển biểu tượng cảm xúc cho các quân cờ đen
     public static Dictionary<string, string> BlackPieceEmojis = new()
     {
-        { "King", "🦁" },
-        { "Queen", "🐯" },
-        { "Rook", "🐻" },
-        { "Bishop", "🦉" },
-        { "Knight", "🐴" },
-        { "Pawn", "🐹" },
+        { "Vua", "🦁" },
+        { "Hậu", "🐯" },
+        { "Xe", "🐻" },
+        { "Tượng", "🦉" },
+        { "Mã", "🐴" },
+        { "Tốt", "🐹" },
     };
 
     // Từ điển biểu tượng cảm xúc cho các quân cờ trắng
     public static Dictionary<string, string> WhitePieceEmojis = new()
     {
-        { "King", "🤴" },
-        { "Queen", "👸" },
-        { "Rook", "🏰" },
-        { "Bishop", "🥷" },
-        { "Knight", "🏇" },
-        { "Pawn", "💂" },
+        { "Vua", "🤴" },
+        { "Hậu", "👸" },
+        { "Xe", "🏰" },
+        { "Tượng", "🥷" },
+        { "Mã", "🏇" },
+        { "Tốt", "💂" },
     };
     public static Dictionary<PieceType, int> PiecePoints = new()
     {

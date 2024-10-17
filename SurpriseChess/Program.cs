@@ -7,6 +7,7 @@ internal class Program
     static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
+        Console.CursorVisible = false;
 
         HomeView homeView = new();
         HomeModel homeModel = new();
