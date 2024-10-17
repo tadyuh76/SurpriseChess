@@ -5,9 +5,9 @@ public class EffectApplier
     private readonly Board board;
     private readonly Random random = new();
 
-    private const float MorphChance = 0.25f;
-    private const float InvisibilityChance = 0.25f;
-    private const float ParalysisChance = 0.5f;
+    private const float MorphChance = 0.2f;
+    private const float InvisibilityChance = 0.3f;
+    private const float ParalysisChance = 0.4f;
     private const float ShieldChance = 0.5f;
 
     public EffectApplier(Board board)
@@ -64,11 +64,14 @@ public class EffectApplier
 
     private void ApplyParalysisEffect(PieceColor color)
     {
-        if (random.NextDouble() > ParalysisChance) return;
+        if ( random.NextDouble() > ParalysisChance) return;
 
         Dictionary<Position, Piece> piecesPositions = board.LocatePieces(color);
-        Piece randomPiece = GetRandomPiece(piecesPositions);
-        randomPiece.IsParalyzed = true;
+        Piece randomPiece = GetRandomPieceExcludingKing(piecesPositions);
+        
+            randomPiece.IsParalyzed = true;
+        
+        
     }
 
     private void ApplyShieldEffect(PieceColor color)
@@ -83,4 +86,10 @@ public class EffectApplier
     private Piece GetRandomPiece(Dictionary<Position, Piece> piecesPositions) => (
         piecesPositions.Values.ElementAt(random.Next(piecesPositions.Count))
     );
+    private Piece GetRandomPieceExcludingKing(Dictionary<Position, Piece> piecesPositions)
+    {
+        //tạo một danh sách những quân mà không chứa vua
+        var nonKingPieces = piecesPositions.Values.Where(piece => piece.Type != PieceType.King).ToList();
+        return nonKingPieces.ElementAt(random.Next(nonKingPieces.Count));
+    }
 }

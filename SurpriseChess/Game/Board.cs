@@ -6,6 +6,16 @@ public record Position(int Row, int Col);
 public class Board : IBoardView, IPrototype<Board>
 {
     private readonly Piece?[,] board = new Piece?[8, 8]; // Bàn cờ với 8 hàng và 8 cột
+    private Dictionary<PieceColor, List<Piece>> capturedPieces = new Dictionary<PieceColor, List<Piece>>()
+    {
+        { PieceColor.White, new List<Piece>() },  // Lưu quân trắng bị bắt
+        { PieceColor.Black, new List<Piece>() }   // Lưu quân đen bị bắt
+    };
+    private Dictionary<PieceColor, int> playerScores = new()
+{
+    { PieceColor.White, 0 },  // Điểm của người chơi quân trắng
+    { PieceColor.Black, 0 }   // Điểm của người chơi quân đen
+};
     public Dictionary<PieceColor, Dictionary<CastleDirection, Position>> RookStartingPositions { get; } = new()
     {
         [PieceColor.White] = new(),
@@ -57,6 +67,7 @@ public class Board : IBoardView, IPrototype<Board>
         if (pieceAtSource == null) throw new InvalidOperationException("Không có quân cờ ở vị trí nguồn");
 
         Piece? pieceAtDestination = board[destination.Row, destination.Col];
+
         if (ChessUtils.IsCastlingMove(pieceAtSource, pieceAtDestination))
         {
             // Xử lý nước đi nhập thành
@@ -68,10 +79,22 @@ public class Board : IBoardView, IPrototype<Board>
             board[source.Row, source.Col] = null; // Xóa quân cờ tại vị trí nguồn
             board[destination.Row, destination.Col] = pieceAtSource; // Đặt quân cờ tại vị trí đích
 
+            // Nếu có quân cờ tại vị trí đích, nghĩa là quân đó bị bắt
+            if (pieceAtDestination != null)
+            {
+                CapturePiece(pieceAtDestination);  // Lưu quân bị bắt vào danh sách
+            }
+
             // Xử lý các nước đi đặc biệt của quân tốt
             if (ChessUtils.IsEnPassantMove(source, destination, pieceAtSource, pieceAtDestination))
             {
-                board[source.Row, destination.Col] = null;  // Bắt quân tốt đối thủ
+                // Quân tốt bị bắt nằm ngay phía sau quân vừa di chuyển, xóa nó khỏi bàn cờ
+                Piece? capturedPawn = board[source.Row, destination.Col];
+                if (capturedPawn != null)
+                {
+                    CapturePiece(capturedPawn);  // Lưu quân tốt bị bắt qua đường vào danh sách
+                    board[source.Row, destination.Col] = null;  // Xóa quân tốt khỏi bàn cờ
+                }
             }
             else if (ChessUtils.IsPawnPromotionMove(pieceAtSource, destination))
             {
@@ -81,6 +104,21 @@ public class Board : IBoardView, IPrototype<Board>
                 );
             }
         }
+    }
+
+    private void CapturePiece(Piece piece)
+    {
+        PieceColor opponentColor = piece.Color == PieceColor.White ? PieceColor.Black : PieceColor.White;
+        capturedPieces[opponentColor].Add(piece);  // Thêm quân bị bắt vào danh sách của đối thủ
+        playerScores[opponentColor] += ChessUtils.PiecePoints[piece.Type]; //Cộng điểm
+    }  
+    public List<Piece> GetCapturedPieces(PieceColor color)
+    {
+        return capturedPieces[color];
+    }
+    public int GetPlayerScore(PieceColor color)
+    {
+        return playerScores[color];
     }
 
     // Xác định vị trí các quân cờ trên bàn cờ
