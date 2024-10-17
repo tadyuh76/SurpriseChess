@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
+
 
 namespace SurpriseChess;
 
@@ -48,7 +50,7 @@ public class ChessModel
         HighlightedMoves.Clear();
     }
 
-    public void  HandleMoveTo(Position destination)
+    public async Task HandleMoveTo(Position destination)
     {
         if (SelectedPosition == null) return;
 
@@ -64,7 +66,7 @@ public class ChessModel
         // Check if the bot needs to make a move
         if (Result == GameResult.InProgress && IsBotsTurn)
         {
-            HandleBotMove();
+           await HandleBotMove();
         }
     }
 
@@ -82,11 +84,11 @@ public class ChessModel
         Select(source);
 
         await Task.Delay(1000);  // Wait 1s so the player has time to see the move
-        
-        Console.WriteLine($"Nước đi của máy : {FEN.PositionToFEN(source)} -> {FEN.PositionToFEN(destination)}");
 
-        HandleMoveTo(destination);
+        await HandleMoveTo(destination);
+        Debug.Print("Made move");
     }
+   
 
     private async Task<(Position, Position)> GetBotMove()
     {

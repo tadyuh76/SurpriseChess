@@ -47,7 +47,6 @@ public class StockFish : IChessBot
 
             // Lấy và in ra các nước đi tốt nhất
             List<(Position, Position)> bestMoves = new();
-            Console.WriteLine($"top {numMoves} nước đi tốt nhất từ api :");
 
             foreach (JsonElement item in root.EnumerateArray())
             {
@@ -58,8 +57,7 @@ public class StockFish : IChessBot
                     Position endPosition = FEN.FENToPosition(move[2..4]);
                     bestMoves.Add((startPosition, endPosition));
 
-                    // In ra nước đi
-                    Console.WriteLine($"{FEN.PositionToFEN(startPosition)} -> {FEN.PositionToFEN(endPosition)}");
+                  
                   
 
                 }

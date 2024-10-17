@@ -24,14 +24,19 @@ internal class ChessController : IController
 
         while (model.Result == GameResult.InProgress) // Khi trò chơi đang diễn ra
         {
-            Board board = model.Board;
-            Position? selectedPosition = model.SelectedPosition;
-            HashSet<Position> highlightedMoves = model.HighlightedMoves;
-            PieceColor currentPlayerColor = model.GameState.CurrentPlayerColor;
-
-            view.Render(board, selectedPosition, highlightedMoves, currentPlayerColor, cursorX, cursorY); // Vẽ bàn cờ
+            RenderView();
             ListenKeyStroke(); // Lắng nghe phím bấm
         }
+    }
+
+    private void RenderView()
+    {
+        Board board = model.Board;
+        Position? selectedPosition = model.SelectedPosition;
+        HashSet<Position> highlightedMoves = model.HighlightedMoves;
+        PieceColor currentPlayerColor = model.GameState.CurrentPlayerColor;
+
+        view.Render(board, selectedPosition, highlightedMoves, currentPlayerColor, cursorX, cursorY); // Vẽ bàn cờ
     }
 
     // Lắng nghe các phím bấm
@@ -49,14 +54,15 @@ internal class ChessController : IController
     }
 
     // Xử lý nhấp chuột vào ô
-    private void HandleBoardClick(Position clickedSquare)
+    private async Task HandleBoardClick(Position clickedSquare)
     {
         if (model.IsBotsTurn) return;  // Không cho người chơi click nếu là lượt của bot
 
         // Nếu nhấp vào nước đi hợp lệ, di chuyển đến đó
         if (model.HighlightedMoves.Contains(clickedSquare))
         {
-            model.HandleMoveTo(clickedSquare);
+            await model.HandleMoveTo(clickedSquare);
+            RenderView();
             return;
         }
 
