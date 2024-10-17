@@ -1,4 +1,6 @@
-﻿namespace SurpriseChess;
+﻿using System.Diagnostics;
+
+namespace SurpriseChess;
 
 // Lớp Position đại diện cho vị trí của quân cờ trên bàn cờ
 public record Position(int Row, int Col);
@@ -115,12 +117,12 @@ public class Board : IBoardView, IPrototype<Board>
         Position[] rookPositions = LocatePieces(type: PieceType.Rook).Keys.ToArray();
         return new Dictionary<PieceColor, Dictionary<CastleDirection, Position>>
         {
-            [PieceColor.White] = new Dictionary<CastleDirection, Position>
+            [PieceColor.Black] = new Dictionary<CastleDirection, Position>
             {
                 [CastleDirection.QueenSide] = rookPositions[0],
                 [CastleDirection.KingSide] = rookPositions[1]
             },
-            [PieceColor.Black] = new Dictionary<CastleDirection, Position>
+            [PieceColor.White] = new Dictionary<CastleDirection, Position>
             {
                 [CastleDirection.QueenSide] = rookPositions[2],
                 [CastleDirection.KingSide] = rookPositions[3]
