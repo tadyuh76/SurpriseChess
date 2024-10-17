@@ -5,9 +5,9 @@ class TutorialController : IController
     private readonly TutorialModel model;
     private readonly TutorialView view;
 
-    public TutorialController(TutorialModel model, TutorialView view)
+    public TutorialController(TutorialView view)
     {
-        this.model = model;
+        //this.model = model;
         this.view = view;
     }
 

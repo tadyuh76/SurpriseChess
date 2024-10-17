@@ -164,16 +164,20 @@ namespace SurpriseChess
             {
                 Console.WriteLine($"Rừng sâu đã bắt: {GetCapturedPieces(PieceColor.White)}");
 
-                // Lưu vị trí của đồng hồ
+                // In tiêu đề thời gian
+                Console.Write($"Thời gian còn lại của Rừng sâu: ");
+
+                // Lưu vị trí của đồng hồ ngay trước khi in thời gian
                 int left = Console.CursorLeft;
                 int top = Console.CursorTop;
-                BlackTimerPosition = (left + 25, top);
+                BlackTimerPosition = (left, top);
 
-                Console.Write($"Thời gian còn lại của Rừng sâu: ");
+                // In thời gian
                 Console.WriteLine(FormatTime(chessTimer.GetBlackTime()));
                 Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
             }
         }
+
 
         // Hiển thị quân cờ bị bắt và đồng hồ cho Vương quốc ở dưới
         private void DisplayWhiteCapturedAndTimer()
@@ -183,15 +187,19 @@ namespace SurpriseChess
                 Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
                 Console.WriteLine($"Vương quốc đã bắt: {GetCapturedPieces(PieceColor.Black)}");
 
-                // Lưu vị trí của đồng hồ
+                // In tiêu đề thời gian
+                Console.Write($"Thời gian còn lại của Vương quốc: ");
+
+                // Lưu vị trí của đồng hồ ngay trước khi in thời gian
                 int left = Console.CursorLeft;
                 int top = Console.CursorTop;
-                WhiteTimerPosition = (left + 25, top);
+                WhiteTimerPosition = (left, top);
 
-                Console.Write($"Thời gian còn lại của Vương quốc: ");
+                // In thời gian
                 Console.WriteLine(FormatTime(chessTimer.GetWhiteTime()));
             }
         }
+
 
         // Lấy danh sách quân cờ bị bắt cho mỗi bên
         private string GetCapturedPieces(PieceColor color)

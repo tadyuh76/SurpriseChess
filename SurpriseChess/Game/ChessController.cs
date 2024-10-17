@@ -1,4 +1,6 @@
-﻿namespace SurpriseChess;
+﻿using SurpriseChess.Game;
+
+namespace SurpriseChess;
 
 internal class ChessController : IController
 {
