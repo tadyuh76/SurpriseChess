@@ -18,7 +18,7 @@ public class CampaignModel
 
         for (int i = 0; i < 10; i++)
         {
-            char id = (char)('A' + i); // Tạo ID từ 'A' đến 'J'
+            char id = (char)('A' + i); // Tạo ID từ 'A' đến 'I'
             int difficulty = i + 1;    // Độ khó từ 1 đến 10
             int numMoves = i + 1;      // Số move cũng từ 1 đến 10
 
