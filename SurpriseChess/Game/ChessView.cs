@@ -268,6 +268,9 @@ namespace SurpriseChess
             StartTimerForCurrentPlayer(nextPlayerColor);
         }
 
-        // Thêm các phương thức khác nếu cần thiết
+        public void StopTimer()
+        {
+            chessTimer.StopTimer();
+        }
     }
 }

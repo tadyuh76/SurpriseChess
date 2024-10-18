@@ -33,13 +33,14 @@ internal class ChessController : IController
 
             view.Render(board, selectedPosition, highlightedMoves, currentPlayerColor, cursorX, cursorY); // Vẽ bàn cờ
             ListenKeyStroke(); // Lắng nghe phím bấm
+            Thread.Sleep(10);
         }
     }
 
     // Lắng nghe các phím bấm
     private void ListenKeyStroke()
     {
-        ConsoleKey key = Console.ReadKey().Key; // Đọc phím bấm
+        ConsoleKey key = Console.ReadKey(true).Key; // Đọc phím bấm
 
         // Cập nhật vị trí con trỏ theo hướng di chuyển
         if (key == ConsoleKey.LeftArrow && cursorX > 0) cursorX--;
@@ -81,12 +82,13 @@ internal class ChessController : IController
 
         if (keyPressed == ConsoleKey.Backspace)
         {
+            //Dừng bộ đếm thời gian
+            view.StopTimer();
             // Trở về màn hình chính
             ScreenManager.Instance.NavigateToScreen(new HomeController(
                 new HomeModel(),
                 new HomeView()
             ));
         }
-
     }
 }

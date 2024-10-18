@@ -44,24 +44,27 @@ public class HomeView
 
             if (currentTop >= 0 && currentTop < consoleHeight - 2)
             {
-                DrawCenteredText(consoleWidth, rectangleTop);
-
                 ConsoleColor foregroundColor = (i == model.SelectedIndex) ? ConsoleColor.Green : ConsoleColor.White;
+                DrawCenteredText(consoleWidth, rectangleTop, foregroundColor);               
                 DrawCenteredText(consoleWidth, rectangleMiddle, foregroundColor); // Draw the combined box and text
                 Console.ResetColor();
-                DrawCenteredText(consoleWidth, rectangleBottom);
+                DrawCenteredText(consoleWidth, rectangleBottom, foregroundColor);
             }
-
-            Console.WriteLine();
         }
-
-
-        // Căn giữa phần hướng dẫn 
-        DrawCenteredText(consoleWidth, "Use Arrow Keys to navigate");
-        DrawCenteredText(consoleWidth, "Enter to select");
-        DrawCenteredText(consoleWidth, "Backspace to exit");
+        Console.WriteLine();
+        RenderInstructions();
     }
-    
+
+    private void RenderInstructions()
+    {
+        int consoleWidth = Console.WindowWidth;
+        int instructionTop = Console.WindowHeight - 8;
+
+        DrawCenteredText(consoleWidth, "Dùng ↑ ↓ → ← để điều hướng");
+        DrawCenteredText(consoleWidth, "Nhấn Enter để chọn");
+        DrawCenteredText(consoleWidth, "Nhấn Backspace để thoát");
+    }
+   
     private void DrawCenteredText(int consoleWidth, string text, ConsoleColor color = ConsoleColor.Gray) 
     {
         Console.ForegroundColor = color;
@@ -73,6 +76,7 @@ public class HomeView
         }
         Console.ResetColor();
     }
+    
     private void DrawAtCursor(int left, int top, string text, ConsoleColor color = ConsoleColor.Gray)
     {
         Console.ForegroundColor = color;
