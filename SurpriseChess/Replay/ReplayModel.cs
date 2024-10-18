@@ -4,7 +4,7 @@ using SurpriseChess;
 public class ReplayModel
 {
     public List<string> FENList { get; }
-    public int CurrentMoveIndex { get; private set; } = 0;
+    public int CurrentMoveIndex { get; private set; } = 1;
     public ReplayBoard CurrentBoard { get; private set; }
 
     public ReplayModel(List<string> fenList)
@@ -24,7 +24,7 @@ public class ReplayModel
 
     public void MovePrevious()
     {
-        if (CurrentMoveIndex > 0)
+        if (CurrentMoveIndex > 1)
         {
             CurrentMoveIndex--;
             UpdateCurrentBoard();

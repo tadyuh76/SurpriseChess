@@ -121,6 +121,7 @@ namespace SurpriseChess
 
         public void DisplayNavigationOptions()
         {
+            Console.SetCursorPosition(0, 10);
             Console.WriteLine("\nĐiều khiển:");
             Console.WriteLine("Mũi tên phải (→) - Nước đi tiếp theo");
             Console.WriteLine("Mũi tên trái (←) - Nước đi trước");
@@ -134,7 +135,7 @@ namespace SurpriseChess
 
         public void DisplayMoveInfo(string actualNextMove, string bestNextMove)
         {
-            Console.SetCursorPosition(0, 20);
+            Console.SetCursorPosition(0, 16);
             Console.Write("Bước đi thực tế tiếp theo: ");
             Console.BackgroundColor = ConsoleColor.DarkGreen;
             Console.ForegroundColor = ConsoleColor.White;
