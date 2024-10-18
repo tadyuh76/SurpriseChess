@@ -116,11 +116,11 @@ public class Board : IBoardView, IPrototype<Board>
     }  
     public List<Piece> GetCapturedPieces(PieceColor color)
     {
-        return capturedPieces[color];
+        return capturedPieces[color]; //danh sách các quân cờ bị bắt của từng màu
     }
     public int GetPlayerScore(PieceColor color)
     {
-        return playerScores[color];
+        return playerScores[color]; //điểm của người chơi theo màu
     }
 
     // Xác định vị trí các quân cờ trên bàn cờ

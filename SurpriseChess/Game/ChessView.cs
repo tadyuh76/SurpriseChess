@@ -147,8 +147,27 @@
             int currentLine = 5;
             PrintPieceDescription("Vương quốc", ChessUtils.WhitePieceEmojis, currentLine);
             PrintPieceDescription("Rừng sâu", ChessUtils.BlackPieceEmojis, currentLine);
+            PrintSpecialSquareDescription(ref currentLine);
         }
+        private void PrintSpecialSquareDescription(ref int currentLine)
+        {
+            int offset = 77; // Điều chỉnh vị trí in trên màn hình
 
+            Console.SetCursorPosition(offset, currentLine++);
+            Console.WriteLine("Ô đặc biệt:");
+
+            Console.SetCursorPosition(offset, currentLine++);
+            Console.BackgroundColor = ConsoleColor.Cyan;
+            Console.Write("   "); // In một khối màu để mô tả ô được bảo vệ
+            Console.ResetColor();
+            Console.WriteLine(": Ô được bảo vệ");
+
+            Console.SetCursorPosition(offset, currentLine++);
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.Write("   "); // In một khối màu để mô tả ô bị trói
+            Console.ResetColor();
+            Console.WriteLine(": Ô bị trói");
+        }
         // In mô tả từng loại quân cờ với biểu tượng và tên tương ứng
         private void PrintPieceDescription(string pieceName, Dictionary<string, string> emojisDict, int currentLine)
         {
@@ -156,9 +175,7 @@
             Console.SetCursorPosition(offset, currentLine++);
             Console.WriteLine($"{pieceName}: ");
             foreach (var pieceDescription in emojisDict)
-            {
-                
-                
+            {       
                 Console.SetCursorPosition(offset, currentLine++);              
                 Console.WriteLine($"{pieceDescription.Value}: {pieceDescription.Key} ");
             }
@@ -167,9 +184,9 @@
         // Hiển thị quân cờ bị bắt và đồng hồ cho Đen ở trên
         private void DisplayBlackCapturedAndTimer(Board board)
         {
-            Console.Write($"Rừng sâu đã bắt: {GetCapturedPieces(board, PieceColor.Black)}");
-            Console.WriteLine($" ({board.GetPlayerScore(PieceColor.Black)}đ)");
-            Console.WriteLine($"Thời gian còn lại của Rừng sâu: {FormatTime(blackTimeRemaining)}");         
+            Console.Write($"Rừng sâu đã bắt: {GetCapturedPieces(board, PieceColor.Black)}"); //hiển thị các quân bị bắt
+            Console.WriteLine($" ({board.GetPlayerScore(PieceColor.Black)}đ)"); //hiển thị điểm
+            Console.WriteLine($"Thời gian còn lại của Rừng sâu: {FormatTime(blackTimeRemaining)}");  //hiển thị thời gian còn lại       
             Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
         }
 
@@ -177,15 +194,15 @@
         private void DisplayWhiteCapturedAndTimer(Board board)
         {
             Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
-            Console.Write($"Vương quốc đã bắt: {GetCapturedPieces(board, PieceColor.White)}");
-            Console.WriteLine($" ({board.GetPlayerScore(PieceColor.White)}đ)");
-            Console.WriteLine($"Thời gian còn lại của Vương quốc: {FormatTime(whiteTimeRemaining)}");
+            Console.Write($"Vương quốc đã bắt: {GetCapturedPieces(board, PieceColor.White)}"); //hiển thị các quân bị bắt
+            Console.WriteLine($" ({board.GetPlayerScore(PieceColor.White)}đ)"); //hiển thị điểm
+            Console.WriteLine($"Thời gian còn lại của Vương quốc: {FormatTime(whiteTimeRemaining)}"); //hiển thị thời gian còn lại
         }
 
         // Lấy danh sách quân cờ bị bắt cho mỗi bên từ Board
         private string GetCapturedPieces(Board board, PieceColor color)
         {
-            return string.Join(", ", board.GetCapturedPieces(color).Select(p => p.DisplaySymbol));
+            return string.Join(", ", board.GetCapturedPieces(color).Select(p => p.DisplaySymbol)); //in ra các biểu tượng quân bị bắt
         }
 
         // Định dạng thời gian theo phút và giây
