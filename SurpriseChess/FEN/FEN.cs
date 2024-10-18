@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -70,7 +71,7 @@ namespace SurpriseChess.FEN
                 {
                     fen += emptyCount.ToString();
                 }
-                if (row > 0) fen += "/";  // thêm "/" giữa các dòng bàn cờ
+                if (row < 7) fen += "/";  // thêm "/" giữa các dòng bàn cờ
             }
             return fen;
         }
@@ -98,10 +99,10 @@ namespace SurpriseChess.FEN
             string positionPart = parts[0];
             string[] ranks = positionPart.Split('/');
 
-            for (int row = 0; row < 8; row++)
+            for (int row = 0; row < ranks.Length; row++)
             {
                 int col = 0;
-                foreach (char symbol in ranks[7 - row])
+                foreach (char symbol in ranks[row])
                 {
                     if (char.IsDigit(symbol))
                     {
@@ -109,7 +110,13 @@ namespace SurpriseChess.FEN
                     }
                     else
                     {
-                        board.SetPieceAt(new Position(row, col), CreatePieceFromFEN(symbol));
+                        Debug.Print(col.ToString());
+                        try
+                        {
+                            board.SetPieceAt(new Position(row, col), CreatePieceFromFEN(symbol));
+                        }
+                        catch (Exception ex) { Console.WriteLine("FEN Save bị lỗi, hãy thử lại."); }
+
                         col++;
                     }
                 }
@@ -176,6 +183,16 @@ namespace SurpriseChess.FEN
 
                 return fenList;
             }
+        }
+
+        public static Position FENToPosition(string fenSquare)
+        {
+            char file = fenSquare[0]; // The letter part (a-h)
+            char rank = fenSquare[1]; // The number part (1-8)
+            int col = file - 'a';  // Convert file (column) from 'a'-'h' to 0-7
+            int row = rank - '1';  // Convert rank (row) from '1'-'8' to 0-7
+
+            return new Position(row, col);
         }
     }
 }

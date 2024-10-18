@@ -1,44 +1,40 @@
-﻿public static class GameHistoryPostProcessor
+﻿namespace SurpriseChess
 {
-    public static List<string> RemoveDuplicates(List<string> fenHistory)
+    public static class GameHistoryPostProcessor
     {
-        List<string> processedHistory = new List<string>();
-        string? previousFen = null;
-
-        foreach (var fen in fenHistory)
+        public static List<string> ProcessGameHistory(List<string> originalHistory)
         {
-            if (fen != previousFen)
+            var deduplicatedHistory = RemoveDuplicates(originalHistory);
+            UpdateMoveCounts(deduplicatedHistory);
+            return deduplicatedHistory;
+        }
+
+        private static List<string> RemoveDuplicates(List<string> fenHistory)
+        {
+            List<string> processedHistory = new List<string>();
+            string? previousFen = null;
+            foreach (var fen in fenHistory)
             {
-                processedHistory.Add(fen);
-                previousFen = fen;
+                if (fen != previousFen)
+                {
+                    processedHistory.Add(fen);
+                    previousFen = fen;
+                }
+            }
+            return processedHistory;
+        }
+
+        private static void UpdateMoveCounts(List<string> fenHistory)
+        {
+            for (int i = 0; i < fenHistory.Count; i++)
+            {
+                string[] fenParts = fenHistory[i].Split(' ');
+                int halfMoveClock = i == 0 ? 0 : int.Parse(fenParts[4]) + 1;
+                fenParts[4] = halfMoveClock.ToString();
+                int fullMoveNumber = (i / 2) + 1;
+                fenParts[5] = fullMoveNumber.ToString();
+                fenHistory[i] = string.Join(" ", fenParts);
             }
         }
-
-        return processedHistory;
-    }
-
-    public static void UpdateMoveCounts(List<string> fenHistory)
-    {
-        for (int i = 0; i < fenHistory.Count; i++)
-        {
-            string[] fenParts = fenHistory[i].Split(' ');
-
-            // Cập nhật số đếm half move
-            int halfMoveClock = i == 0 ? 0 : int.Parse(fenParts[4]) + 1;
-            fenParts[4] = halfMoveClock.ToString();
-
-            // Cập nhật số đếm full move
-            int fullMoveNumber = (i / 2) + 1;
-            fenParts[5] = fullMoveNumber.ToString();
-
-            fenHistory[i] = string.Join(" ", fenParts);
-        }
-    }
-
-    public static List<string> ProcessGameHistory(List<string> originalHistory)
-    {
-        var deduplicatedHistory = RemoveDuplicates(originalHistory);
-        UpdateMoveCounts(deduplicatedHistory);
-        return deduplicatedHistory;
     }
 }

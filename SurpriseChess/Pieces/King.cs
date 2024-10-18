@@ -1,4 +1,6 @@
-﻿namespace SurpriseChess;
+﻿using System.Diagnostics;
+
+namespace SurpriseChess;
 
 // Lớp đại diện cho quân vua trong trò chơi 
 public class King : SimpleMovementPiece

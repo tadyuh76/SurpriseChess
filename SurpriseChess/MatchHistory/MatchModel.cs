@@ -17,9 +17,9 @@ public class Match
         do
         {
             Id = random.Next(1000, 10000); // tạo id random 4 chữ số
-        } while (MatchHistoryModel.usedIds.Contains(Id));
+        } while (MatchHistoryModel.UsedIds.Contains(Id));
 
-        MatchHistoryModel.usedIds.Add(Id); // đánh dấu là id đã dc dùng
+        MatchHistoryModel.UsedIds.Add(Id); // đánh dấu là id đã dc dùng
     }
 
     // Method để thêm string FEN và ko cho lặp lại

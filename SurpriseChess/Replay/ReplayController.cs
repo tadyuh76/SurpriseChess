@@ -1,56 +1,69 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SurpriseChess
+﻿namespace SurpriseChess
 {
     public class ReplayController : IController
     {
-        private readonly List<string> fenList;
+        private readonly ReplayModel model;
         private readonly ReplayView view;
-        private ReplayBoard currentBoard;
-        private int currentMoveIndex;
+        private readonly StockFish stockfish;
+        private readonly StockfishAnalysisCache analysisCache;
 
-        public ReplayController(List<string> fenList, ReplayView view)
+
+        public ReplayController(ReplayModel model, ReplayView view)
         {
-            this.fenList = fenList;
+            this.model = model;
             this.view = view;
-            this.currentMoveIndex = 0;
-            this.currentBoard = new ReplayBoard(fenList[0]);
+            this.stockfish = new StockFish();
+            this.analysisCache = new StockfishAnalysisCache();
         }
+
 
         public void Run()
         {
             bool isRunning = true;
-
             while (isRunning)
             {
-                view.RenderBoard(currentBoard);
-                view.DisplayNavigationOptions();
+                
+                DisplayBoardAndAnalysisAsync().Wait();
+                isRunning = HandleUserInput();
+            }
+        }
 
-                ConsoleKeyInfo keyInfo = view.GetUserInput();
+        private async Task DisplayBoardAndAnalysisAsync()
+        {
+            try
+            {
+                string actualNextMove = model.DetermineActualNextMove();
+                view.DisplayMoveInfo(actualNextMove, "Loading...");
 
-                switch (keyInfo.Key)
-                {
-                    case ConsoleKey.RightArrow:
-                        if (currentMoveIndex < fenList.Count - 1)
-                        {
-                            currentMoveIndex++;
-                            currentBoard = new ReplayBoard(fenList[currentMoveIndex]);
-                        }
-                        break;
+                List<(Position, Position)> bestMoves = await model.GetBestMovesAsync(stockfish, analysisCache);
+                string bestMove = model.ConvertMoveToString(bestMoves.FirstOrDefault());
 
-                    case ConsoleKey.LeftArrow:
-                        if (currentMoveIndex > 0)
-                        {
-                            currentMoveIndex--;
-                            currentBoard = new ReplayBoard(fenList[currentMoveIndex]);
-                        }
-                        break;
+                view.RenderBoard(model.CurrentBoard, actualNextMove, bestMove);
+                view.DisplayMoveInfo(actualNextMove, bestMove + "      ");
 
-                    case ConsoleKey.Backspace:
-                        isRunning = false;
-                        break;
-                }
+            }
+            catch (Exception ex)
+            {
+                view.DisplayError($"Lỗi phân tích nước đi: {ex.Message}");
+            }
+        }
+
+        private bool HandleUserInput()
+        {
+           
+            ConsoleKeyInfo keyInfo = view.GetUserInput();
+            switch (keyInfo.Key)
+            {
+                case ConsoleKey.RightArrow:
+                    model.MoveNext();
+                    return true;
+                case ConsoleKey.LeftArrow:
+                    model.MovePrevious();
+                    return true;
+                case ConsoleKey.Backspace:
+                    return false;
+                default:
+                    return true;
             }
         }
     }

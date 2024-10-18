@@ -68,22 +68,22 @@ public static class ChessUtils
     // Từ điển biểu tượng cảm xúc cho các quân cờ đen
     public static Dictionary<string, string> BlackPieceEmojis = new()
     {
-        { "King", "🦁" },
-        { "Queen", "🐯" },
-        { "Rook", "🐻" },
-        { "Bishop", "🦉" },
-        { "Knight", "🐴" },
-        { "Pawn", "🐹" },
+        { "Vua", "🦁" },
+        { "Hậu", "🐯" },
+        { "Xe", "🐻" },
+        { "Tượng", "🦉" },
+        { "Mã", "🐴" },
+        { "Tốt", "🐹" },
     };
 
     // Từ điển biểu tượng cảm xúc cho các quân cờ trắng
     public static Dictionary<string, string> WhitePieceEmojis = new()
     {
-        { "King", "🤴" },
-        { "Queen", "👸" },
-        { "Rook", "🏰" },
-        { "Bishop", "🥷" },
-        { "Knight", "🏇" },
-        { "Pawn", "💂" },
+        { "Vua", "🤴" },
+        { "Hậu", "👸" },
+        { "Xe", "🏰" },
+        { "Tượng", "🥷" },
+        { "Mã", "🏇" },
+        { "Tốt", "💂" },
     };
 }

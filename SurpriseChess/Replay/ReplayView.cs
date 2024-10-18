@@ -5,44 +5,100 @@ namespace SurpriseChess
 {
     public class ReplayView
     {
-        public void RenderBoard(ReplayBoard board)
+        static string[] columnLabels = { "a", "b", "c", "d", "e", "f", "g", "h" };
+        static string[] rowLabels = { "8", "7", "6", "5", "4", "3", "2", "1" };
+        private string actualMove;
+        private string bestMove;
+
+        public void RenderBoard(ReplayBoard board, string actualMove, string bestMove)
         {
             Console.Clear();
+            this.actualMove = actualMove;
+            this.bestMove = bestMove;
 
+            //vẽ bàn cờ
+            DrawBoardReplay(board);
+
+            //// Hiển thị tên cột dưới bàn cờ
+            DisplayColumnLabels();
+
+            // In ra miêu tả từng quân cở
+            PrintDescription();
+            
+            //In ra bảng điều khiển
+            DisplayNavigationOptions();
+
+        }
+
+
+        private void DrawBoardReplay(ReplayBoard board)
+        {
             // Render bảng
             for (int row = 0; row < 8; row++)
             {
+                Console.Write($"{rowLabels[row]}");
                 for (int col = 0; col < 8; col++)
                 {
                     Position currentPosition = new Position(row, col);
-                    DrawSquare(board, currentPosition);
+                    DrawSquareReplay(board, currentPosition);
                 }
                 Console.ResetColor();
                 Console.WriteLine();
             }
-
-            // In ra miêu tả từng quân cở
-            PrintDescription();
         }
 
-        private void DrawSquare(ReplayBoard board, Position position)
+        private void DrawSquareReplay(ReplayBoard board, Position position)
         {
-            SetSquareBackgroundColor(position);
+            string squareNotation = $"{(char)('a' + position.Col)}{8 - position.Row}";
+            ConsoleColor backgroundColor = GetSquareBackgroundColor(position, squareNotation);
+            ConsoleColor foregroundColor = ConsoleColor.Black;
+
+            Console.BackgroundColor = backgroundColor;
+            Console.ForegroundColor = foregroundColor;
 
             Piece? piece = board.GetPieceAt(position);
-            Console.Write($" {piece?.DisplaySymbol ?? "  "} ");
+            string pieceSymbol = piece?.DisplaySymbol ?? "  ";
+
+            // Adjust foreground color for better visibility if needed
+            if (backgroundColor == ConsoleColor.DarkGreen || backgroundColor == ConsoleColor.DarkYellow)
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+
+            Console.Write($" {pieceSymbol} ");
+            Console.ResetColor();
         }
 
-        private void SetSquareBackgroundColor(Position position)
+        private bool IsPartOfMove(string squareNotation, string move)
         {
-            if ((position.Row + position.Col) % 2 == 0)
+            return move.Contains(squareNotation);
+        }
+
+        private ConsoleColor GetSquareBackgroundColor(Position position, string squareNotation)
+        {
+            if (IsPartOfMove(squareNotation, actualMove))
             {
-                Console.BackgroundColor = ConsoleColor.Gray;
+                return ConsoleColor.DarkGreen;
+            }
+            else if (IsPartOfMove(squareNotation, bestMove))
+            {
+                return ConsoleColor.DarkYellow;
             }
             else
             {
-                Console.BackgroundColor = ConsoleColor.DarkGray;
+                return (position.Row + position.Col) % 2 == 0 ? ConsoleColor.Gray : ConsoleColor.DarkGray;
             }
+        }
+
+        // Hiển thị tên cột dưới bàn cờ
+        static void DisplayColumnLabels()
+        {
+            Console.Write("   ");
+            foreach (string label in columnLabels)
+            {
+                Console.Write($"{label}   ");
+            }
+            Console.WriteLine();
         }
 
         private void PrintDescription()
@@ -74,6 +130,28 @@ namespace SurpriseChess
         public ConsoleKeyInfo GetUserInput()
         {
             return Console.ReadKey(true);
+        }
+
+        public void DisplayMoveInfo(string actualNextMove, string bestNextMove)
+        {
+            Console.SetCursorPosition(0, 20);
+            Console.Write("Bước đi thực tế tiếp theo: ");
+            Console.BackgroundColor = ConsoleColor.DarkGreen;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(actualNextMove);
+            Console.ResetColor();
+
+            Console.Write("Bước đi tiếp theo tối ưu nhất (Stockfish): ");
+            Console.BackgroundColor = ConsoleColor.DarkYellow;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine(bestNextMove);
+            Console.ResetColor();
+        }
+
+
+        public void DisplayError(string message)
+        {
+            Console.WriteLine($"Lỗi: {message}");
         }
     }
 }
