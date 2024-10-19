@@ -64,13 +64,14 @@ public class ChessModel
         // Gắn hiệu ứng bất ngờ vào bàn cờ
         effectApplier.ClearEffects();
         effectApplier.ApplyEffects(destination);
-        
+
 
         Result = arbiter.GetGameResult(GameState.CurrentPlayerColor);
         Deselect();
+    }
+}
 
-
-        // Kiểm tra nếu máy có thể thực hiện nước cờ tiếp theo
+    /*    // Kiểm tra nếu máy có thể thực hiện nước cờ tiếp theo
         if (Result == GameResult.InProgress && IsBotsTurn)
         {
             HandleBotMove();
@@ -125,4 +126,5 @@ public class ChessModel
         }
         return legalMoves[random.Next(legalMoves.Count)];
     }
-}
+}     
+    */
