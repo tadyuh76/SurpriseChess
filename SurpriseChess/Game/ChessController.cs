@@ -25,8 +25,16 @@ internal class ChessController : IController
             HistoryFEN = new List<string>(), // Khởi tạo danh sách trống ban đầu
             Result = "InProgress" // Trạng thái trận đấu ban đầu
         };
+        // Khởi tạo listener cho model mỗi khi có update từ board
+        this.model.BoardUpdated += OnBoardUpdated;
     }
-   
+
+    // Method to handle model updates
+    private void OnBoardUpdated()
+    {
+        view.Render(model, cursorX, cursorY); // Update the view based on the model state
+    }
+
     // Chạy trò chơi
     public void Run()
     {
@@ -34,7 +42,7 @@ internal class ChessController : IController
 
         while (model.Result == GameResult.InProgress) // Khi trò chơi đang diễn ra
         {
-            RenderView();
+            view.Render(model, cursorX, cursorY);
 
             // Ghi lại FEN của trạng thái bàn cờ hiện tại
             string currentFEN = FEN.GetFEN(model.Board, model.GameState);
@@ -59,16 +67,6 @@ internal class ChessController : IController
             )    
         );
 
-    }
-
-    private void RenderView()
-    {
-        Board board = model.Board;
-        Position? selectedPosition = model.SelectedPosition;
-        HashSet<Position> highlightedMoves = model.HighlightedMoves;
-        PieceColor currentPlayerColor = model.GameState.CurrentPlayerColor;
-
-        view.Render(board, selectedPosition, highlightedMoves, currentPlayerColor, cursorX, cursorY); // Vẽ bàn cờ
     }
 
     // Lắng nghe các phím bấm

@@ -13,6 +13,7 @@ public class ChessModel
  
     private readonly Random random = new();
 
+    public event Action? BoardUpdated;
 
     public GameMode GameMode { get; private set; }
     public GameState GameState { get; private set; } = null!;
@@ -86,9 +87,11 @@ public class ChessModel
         (Position source, Position destination) = await GetBotMove();
         Debug.Print($"bot's gonna move: from {FEN.PositionToFEN(source)} to {FEN.PositionToFEN(destination)}");
         Select(source);
+        BoardUpdated!.Invoke();
         
         await Task.Delay(1000);  // Wait 1s so the player has time to see the move
         HandleMoveTo(destination);
+        BoardUpdated.Invoke();
     }
 
 

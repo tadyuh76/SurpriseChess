@@ -1,4 +1,6 @@
-﻿namespace SurpriseChess
+﻿using System.Reflection;
+
+namespace SurpriseChess
 {
     internal class ChessView
     {
@@ -10,10 +12,14 @@
         private static int blackTimeRemaining = 900; // 15 phút cho Đen
 
 
-
         // Phương thức hiển thị toàn bộ bàn cờ, bao gồm các quân cờ và các ô được đánh dấu
-        public void Render(Board board, Position? selectedPosition, HashSet<Position> highlightedMoves, PieceColor currentPlayerColor, int cursorX, int cursorY)
+        public void Render(ChessModel model, int cursorX, int cursorY)
         {
+            Board board = model.Board;
+            Position? selectedPosition = model.SelectedPosition;
+            HashSet<Position> highlightedMoves = model.HighlightedMoves;
+            PieceColor currentPlayerColor = model.GameState.CurrentPlayerColor;
+
             Console.Clear();
 
             // Hiển thị bộ đếm quân cờ đã bị bắt và đồng hồ

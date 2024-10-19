@@ -2,7 +2,6 @@
 
 class TutorialController : IController
 {
-    private readonly TutorialModel model;
     private readonly TutorialView view;
 
     public TutorialController(TutorialView view)
