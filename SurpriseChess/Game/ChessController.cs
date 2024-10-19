@@ -28,7 +28,7 @@ internal class ChessController : IController
             Result = "InProgress" // Trạng thái trận đấu ban đầu
         };
     }
-
+   
     // Chạy trò chơi
     public void Run()
     {
@@ -36,12 +36,7 @@ internal class ChessController : IController
 
         while (model.Result == GameResult.InProgress) // Khi trò chơi đang diễn ra
         {
-            Board board = model.Board;
-            Position? selectedPosition = model.SelectedPosition;
-            HashSet<Position> highlightedMoves = model.HighlightedMoves;
-            PieceColor currentPlayerColor = model.GameState.CurrentPlayerColor;
-
-            view.Render(board, selectedPosition, highlightedMoves, currentPlayerColor, cursorX, cursorY); // Vẽ bàn cờ
+            RenderView();
 
             // Ghi lại FEN của trạng thái bàn cờ hiện tại
             string currentFEN = FEN.FEN.GetFEN(model.Board, model.GameState);
@@ -58,6 +53,25 @@ internal class ChessController : IController
         List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match?.HistoryFEN);
 
         MatchHistoryManager.SaveMatch(match); // Xuất trận đấu ra file bằng cách sử dụng MatchHistoryManager
+
+        // Hiển thị màn hình kết thúc bàn cờ dựa với kết quả tương ứng
+        ScreenManager.Instance.NavigateToScreen(
+            new EndGameController(
+                new EndGameView(),
+                model.Result
+            )    
+        );
+
+    }
+
+    private void RenderView()
+    {
+        Board board = model.Board;
+        Position? selectedPosition = model.SelectedPosition;
+        HashSet<Position> highlightedMoves = model.HighlightedMoves;
+        PieceColor currentPlayerColor = model.GameState.CurrentPlayerColor;
+
+        view.Render(board, selectedPosition, highlightedMoves, currentPlayerColor, cursorX, cursorY); // Vẽ bàn cờ
     }
 
     // Lắng nghe các phím bấm
@@ -71,16 +85,19 @@ internal class ChessController : IController
         else if (key == ConsoleKey.UpArrow && cursorY > 0) cursorY--;
         else if (key == ConsoleKey.DownArrow && cursorY < 7) cursorY++;
         else if (key == ConsoleKey.Enter) HandleBoardClick(new Position(cursorY, cursorX));
-        else if (key == ConsoleKey.Backspace) HandleNavigateBack();
+        else if (key == ConsoleKey.Backspace) ScreenManager.Instance.BackToHomeScreen();
     }
 
     // Xử lý nhấp chuột vào ô
-    private void HandleBoardClick(Position clickedSquare)
+    private async Task HandleBoardClick(Position clickedSquare)
     {
+        if (model.IsBotsTurn) return;  // Không cho người chơi click nếu là lượt của bot
+
         // Nếu nhấp vào nước đi hợp lệ, di chuyển đến đó
         if (model.HighlightedMoves.Contains(clickedSquare))
         {
-            model.HandleMoveTo(clickedSquare);
+            await model.HandleMoveTo(clickedSquare);
+            RenderView();
             return;
         }
 
@@ -94,23 +111,5 @@ internal class ChessController : IController
         {
             model.Deselect();
         }
-    }
-
-    private void HandleNavigateBack()
-    {
-        // Yêu cầu người dùng xác nhận thoát trò chơi
-        ConsoleKey keyPressed;
-
-        keyPressed = Console.ReadKey().Key;
-
-        if (keyPressed == ConsoleKey.Backspace)
-        {
-            // Trở về màn hình chính
-            ScreenManager.Instance.NavigateToScreen(new HomeController(
-                new HomeModel(),
-                new HomeView()
-            ));
-        }
-
-    }
+    }    
 }

@@ -14,5 +14,6 @@ internal class Program
         HomeController homeController = new(homeModel, homeView);
 
         ScreenManager.Instance.NavigateToScreen(homeController);
+
     }
 }

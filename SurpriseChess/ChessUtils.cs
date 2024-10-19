@@ -40,8 +40,8 @@ public static class ChessUtils
     {
         [PieceType.King] = new Dictionary<CastleDirection, int>
         {
-            [CastleDirection.KingSide] = 6,  // Vị trí cột của tướng bên cánh vua
-            [CastleDirection.QueenSide] = 2  // Vị trí cột của tướng bên cánh hậu
+            [CastleDirection.KingSide] = 6,  // Vị trí cột của vua bên cánh vua
+            [CastleDirection.QueenSide] = 2  // Vị trí cột của vua bên cánh hậu
         },
         [PieceType.Rook] = new Dictionary<CastleDirection, int>
         {
@@ -85,5 +85,15 @@ public static class ChessUtils
         { "Tượng", "🥷" },
         { "Mã", "🏇" },
         { "Tốt", "💂" },
+
+    };
+    public static Dictionary<PieceType, int> PiecePoints = new()
+    {
+        { PieceType.Pawn, 1 },       // Quân tốt
+        { PieceType.Knight, 3 },     // Quân mã
+        { PieceType.Bishop, 3 },     // Quân tượng
+        { PieceType.Rook, 5 },       // Quân xe
+        { PieceType.Queen, 9 },      // Quân hậu
+        { PieceType.King, 0 }        // Quân vua không được tính điểm vì không thể bị bắt
     };
 }

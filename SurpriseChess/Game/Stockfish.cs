@@ -1,24 +1,33 @@
-﻿
-using SurpriseChess.FEN;
-using SurpriseChess;
-using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 
+namespace SurpriseChess;
 public class StockFish : IChessBot
 {
     private static readonly HttpClient client = new() { Timeout = TimeSpan.FromSeconds(5) };
     private const string ApiUrl = "https://tadyuh76.pythonanywhere.com/best_moves";
-    private const int NumMoves = 3;
+
+    private const int numMoves = 3; 
+    private readonly int depth; // depth được lấy từ CampaignNode
+
+    public StockFish(int depth)
+    {
+        this.depth = depth; // Truyền số depth được khởi tạo
+    }
 
     public async Task<List<(Position, Position)>> GetBestMoves(string fen)
     {
-        // Create the request body
+        // Tạo nội dung yêu cầu
         var requestBody = new
         {
             fen,
             options = new { UCI_Chess960 = true },
-            num_moves = NumMoves,
-            depth = 10
+            num_moves = numMoves, 
+            depths = depth  
         };
 
         var jsonContent = new StringContent(
@@ -29,27 +38,28 @@ public class StockFish : IChessBot
 
         try
         {
-            // Send POST request
+            // Gửi yêu cầu POST
             HttpResponseMessage response = await client.PostAsync(ApiUrl, jsonContent);
 
-            // Handle response
+            // Xử lý phản hồi
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
             using JsonDocument doc = JsonDocument.Parse(responseBody);
             JsonElement root = doc.RootElement;
 
-            // Iterate over the JSON array and extract moves
+            // Lấy và in ra các nước đi tốt nhất
             List<(Position, Position)> bestMoves = new();
             foreach (JsonElement item in root.EnumerateArray())
             {
                 if (item.TryGetProperty("Move", out JsonElement moveElement))
                 {
                     string move = moveElement.GetString()!;
-                    // Convert string representation of move to Position type
+
                     Position startPosition = FEN.FENToPosition(move[..2]);
                     Position endPosition = FEN.FENToPosition(move[2..4]);
                     bestMoves.Add((startPosition, endPosition));
                 }
+               
             }
 
             return bestMoves;
@@ -60,6 +70,7 @@ public class StockFish : IChessBot
         }
     }
 }
+
 public class StockfishAnalysisCache
 {
     private readonly Dictionary<string, List<(Position, Position)>> cache = new();
@@ -92,3 +103,13 @@ public class StockfishAnalysisCache
         cache[fen] = analysis;
     }
 }
+
+
+
+
+
+
+
+
+
+
