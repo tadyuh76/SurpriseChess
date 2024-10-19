@@ -1,3 +1,5 @@
+﻿using SurpriseChess.MatchHistory;
+
 namespace SurpriseChess;
 
 internal class ChessController : IController
@@ -44,6 +46,7 @@ internal class ChessController : IController
             }
 
             ListenKeyStroke(); // Lắng nghe phím bấm
+
         }
         if (match != null)
         {
@@ -77,7 +80,7 @@ internal class ChessController : IController
     // Lắng nghe các phím bấm
     private void ListenKeyStroke()
     {
-        ConsoleKey key = Console.ReadKey(true).Key; // Đọc phím bấm
+        ConsoleKey key = Console.ReadKey().Key; // Đọc phím bấm
 
         // Cập nhật vị trí con trỏ theo hướng di chuyển
         if (key == ConsoleKey.LeftArrow && cursorX > 0) cursorX--;

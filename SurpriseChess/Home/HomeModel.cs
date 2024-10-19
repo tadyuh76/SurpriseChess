@@ -2,6 +2,6 @@
 
 public class HomeModel
 {
-    public string[] Options { get; } = { "2 người chơi", "1 người chơi", " Hướng dẫn", " Lịch sử đấu" };
+    public string[] Options { get; } = { "Player vs Player", "Campaign Mode", "Tutorial", "Match History" };
     public int SelectedIndex { get; set; } = 0;
 }

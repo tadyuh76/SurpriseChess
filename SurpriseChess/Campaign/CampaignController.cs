@@ -70,6 +70,7 @@ public class CampaignController : IController
     {
         int newX = selectedNode.x + dx;
         int newY = selectedNode.y + dy;
+
         
         if (newX >= 0 && newX < map.GetLength(0) &&
             newY >= 0 && newY < map.GetLength(1) &&
