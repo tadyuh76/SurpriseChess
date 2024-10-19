@@ -1,48 +1,41 @@
-namespace SurpriseChess;
-
-public class MatchHistoryController : IController
+﻿namespace SurpriseChess
 {
-    private readonly MatchHistoryModel model;
-    private readonly MatchHistoryView view;
-
-    public MatchHistoryController(MatchHistoryModel model, MatchHistoryView view)
+    public class MatchHistoryController : IController
     {
-        this.model = model;
-        this.view = view;
-    }
+        private readonly MatchHistoryModel model;
+        private readonly MatchHistoryView view;
 
-    public void Run()
-    {
-        view.Render(model.Matches);
-
-        int selectedId = view.GetSelectedMatchId();
-        if (selectedId > 0)
+        public MatchHistoryController(MatchHistoryModel model, MatchHistoryView view)
         {
-            var selectedMatch = model.Matches.FirstOrDefault(m => m.Id == selectedId);
-            if (selectedMatch != null)
-            {
-                // Navigate to the Game Screen with the selected match details
-                // ChessController chessController = new ChessController(
-                //    new ChessModel(
-                //        // convert FENs to BoardSetups
-                //        // then check if the model receives the list of board setups,
-                //        // it will render the UI for viewing history, not for playing the game.
-                //    ),
-                //    new ChessView()
-                //);
+            this.model = model;
+            this.view = view;
+        }
 
-                // for placeholder
-                ChessController chessController = new ChessController(
-                    new ChessModel(new Chess960()),
-                    new ChessView(TimeSpan.FromMinutes(15)),
-                    GameMode.PlayerVsPlayer,
-                    null
-                );
-                chessController.Run();
-            }
-            else
+        public void Run()
+        {
+            while (true)
             {
-                Console.WriteLine("Invalid match number.");
+                view.RenderMatchList(model.Matches);
+                int selectedId = view.GetSelectedMatchId();
+
+                if (selectedId == -1) break;
+
+                var selectedMatch = model.GetMatchById(selectedId);
+                if (selectedMatch != null)
+                {
+
+                    List<string> fenList = selectedMatch.HistoryFEN;
+                        var replayModel = new ReplayModel(fenList);
+                        var replayView = new ReplayView();
+                        var replayController = new ReplayController(replayModel, replayView);
+                        ScreenManager.Instance.NavigateToScreen(replayController);
+                    
+                    
+                }
+                else
+                {
+                    view.DisplayError("ID trận đấu không hợp lệ.");
+                }
             }
         }
     }

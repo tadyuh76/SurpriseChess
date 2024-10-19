@@ -4,20 +4,17 @@ using System.Linq;
 using System.Threading;
 using SurpriseChess.Game; // Thêm namespace để sử dụng ChessTimer
 
-namespace SurpriseChess
-{
+namespace SurpriseChess;
+
     internal class ChessView
     {
         static string[] columnLabels = { "a", "b", "c", "d", "e", "f", "g", "h" };
         static string[] rowLabels = { "8", "7", "6", "5", "4", "3", "2", "1" };
 
-        // Biến lưu trữ các quân cờ đã bắt của 2 bên
-        private static Dictionary<PieceColor, List<Piece>> capturedPieces = new()
-        {
-            { PieceColor.White, new List<Piece>() },
-            { PieceColor.Black, new List<Piece>() }
-        };
-
+        // Biến lưu trữ thời gian và quân cờ bị bắt
+        private static int whiteTimeRemaining = 900; // 15 phút cho Trắng
+        private static int blackTimeRemaining = 900; // 15 phút cho Đen
+      
         private ChessTimer chessTimer;
 
         // Vị trí của thời gian trên console
@@ -40,7 +37,7 @@ namespace SurpriseChess
             Console.Clear();
 
             // Hiển thị bộ đếm quân cờ đã bị bắt và đồng hồ
-            DisplayBlackCapturedAndTimer();
+            DisplayBlackCapturedAndTimer(board);
 
             // Vẽ bàn cờ vua
             DrawBoard(board, selectedPosition, highlightedMoves, cursorX, cursorY);
@@ -49,16 +46,13 @@ namespace SurpriseChess
             DisplayColumnLabels();
 
             // Hiển thị bộ đếm quân cờ đã bị bắt và đồng hồ của Trắng
-            DisplayWhiteCapturedAndTimer();
+            DisplayWhiteCapturedAndTimer(board);
 
             // Hiển thị lượt chơi hiện tại
             DisplayCurrentTurn(currentPlayerColor);
 
             // In mô tả cho các quân cờ
             PrintDescription();
-
-            // Bắt đầu đồng hồ cho người chơi hiện tại
-            StartTimerForCurrentPlayer(currentPlayerColor);
         }
 
         private void DrawBoard(Board board, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
@@ -90,6 +84,12 @@ namespace SurpriseChess
             }
             Console.WriteLine();
         }
+    
+        // Phương thức để vẽ một ô cờ cụ thể
+        private void DrawSquare(Board board, Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
+        {
+            // Thiết lập màu nền cho ô cờ dựa trên trạng thái của nó
+            SetSquareBackgroundColor(board, position, selectedPosition, highlightedMoves, cursorX, cursorY);
 
         // Phương thức để vẽ một ô cờ cụ thể
         private void DrawSquare(Board board, Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
@@ -272,5 +272,4 @@ namespace SurpriseChess
         {
             chessTimer.StopTimer();
         }
-    }
 }

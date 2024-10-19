@@ -1,4 +1,6 @@
-﻿namespace SurpriseChess;
+﻿using System.Diagnostics;
+
+namespace SurpriseChess;
 
 // Lớp đại diện cho quân vua trong trò chơi 
 public class King : SimpleMovementPiece
@@ -23,7 +25,7 @@ public class King : SimpleMovementPiece
 
         // Lấy các nước đi của xe khi nhập thành
         moves.AddRange(GetCastlingMoves(board, currentPosition, gameState));
-
+        
         return moves;
     }
 
@@ -43,7 +45,6 @@ public class King : SimpleMovementPiece
             Piece? rook = board.GetPieceAt(currentRookPosition);
             // Kiểm tra rằng quân xe vẫn ở vị trí khởi đầu
             if (rook == null || rook.Type != PieceType.Rook || rook.Color != Color) continue;
-
             // Kiểm tra xem có quân nào chắn đường thành không
             bool isCastlingPathClear = true;
             int[] cols = {

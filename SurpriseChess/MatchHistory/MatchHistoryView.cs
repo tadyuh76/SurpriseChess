@@ -1,25 +1,31 @@
-namespace SurpriseChess;
-
-public class MatchHistoryView
+﻿namespace SurpriseChess
 {
-    public void Render(List<Match> matches)
+    public class MatchHistoryView
     {
-        Console.WriteLine("Match History:");
-        foreach (var match in matches)
+        public void RenderMatchList(List<Match> matches)
         {
-            Console.WriteLine($"{match.Id}: {match.Result} on {match.MatchDate.ToShortDateString()}");
+            Console.Clear();
+            Console.WriteLine("Lịch sử trận đấu:");
+            foreach (var match in matches)
+            {
+                Console.WriteLine($"{match.Id}: {match.Result} on {match.MatchDate.ToShortDateString()}");
+            }
+            Console.WriteLine("Nhập ID trận để xem lại hoặc dùng backspace để lui về màn hình chính.");
         }
-        Console.WriteLine("Enter the match number to view the details or press Backspace to go back.");
-    }
 
-    public int GetSelectedMatchId()
-    {
-        Console.Write("Enter match number: ");
-        int selectedId;
-        if (int.TryParse(Console.ReadLine(), out selectedId))
+        public int GetSelectedMatchId()
         {
-            return selectedId;
+            Console.Write("Chọn ID trận: ");
+            if (int.TryParse(Console.ReadLine(), out int selectedId))
+            {
+                return selectedId;
+            }
+            return -1;
         }
-        return -1; // Invalid input
+
+        public void DisplayError(string message)
+        {
+            Console.WriteLine($"Lỗi: {message}");
+        }
     }
 }

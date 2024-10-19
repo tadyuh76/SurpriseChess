@@ -59,8 +59,8 @@ public class HomeController : IController
         {
             case 0:
                 ScreenManager.Instance.NavigateToScreen(new ChessController(
-                    new ChessModel(new Chess960()),
-                    new ChessView(TimeSpan.FromMinutes(15)), // Truyền tham số initialTime
+                    new ChessModel(new Chess960(), null!),
+                    new ChessView(),
                     GameMode.PlayerVsPlayer,
                     null
                 ));
