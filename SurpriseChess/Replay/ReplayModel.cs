@@ -1,5 +1,4 @@
-﻿using SurpriseChess.FEN;
-using SurpriseChess;
+﻿using SurpriseChess;
 
 public class ReplayModel
 {

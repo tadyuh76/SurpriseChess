@@ -19,7 +19,7 @@ namespace SurpriseChess
         {
             this.model = model;
             this.view = view;
-            this.stockfish = new StockFish();
+            this.stockfish = new StockFish(depth: 10);
             this.analysisCache = new StockfishAnalysisCache();
             this.inputCooldown = new Stopwatch();
         }

@@ -90,7 +90,6 @@ public class ChessModel
         await Task.Delay(1000);  // Chờ 1s để người chơi thấy được nước đi
 
         await HandleMoveTo(destination);
-        Debug.Print("Made move");
     }
    
 

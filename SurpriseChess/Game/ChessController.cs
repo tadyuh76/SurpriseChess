@@ -1,6 +1,4 @@
 ﻿using SurpriseChess.MatchHistory;
-using System.Text.RegularExpressions;
-using SurpriseChess.FEN;
 
 namespace SurpriseChess;
 
@@ -39,21 +37,26 @@ internal class ChessController : IController
             RenderView();
 
             // Ghi lại FEN của trạng thái bàn cờ hiện tại
-            string currentFEN = FEN.FEN.GetFEN(model.Board, model.GameState);
+            string currentFEN = FEN.GetFEN(model.Board, model.GameState);
 
-            // Sử dụng AddFEN với một danh sách FEN (dù chỉ là một FEN ở đây)
-            match?.AddFEN(new List<string> { currentFEN });
+            if (match != null)
+            {
+                // Sử dụng AddFEN với một danh sách FEN (dù chỉ là một FEN ở đây)
+                match!.AddFEN(new List<string> { currentFEN });
+            }
 
             ListenKeyStroke(); // Lắng nghe phím bấm
 
         }
-        // Khi trò chơi kết thúc, lưu kết quả và xuất lịch sử
-        match.Result = model.Result.ToString();
-        // Loại bỏ các chuỗi FEN trùng lặp vaf
-        List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match?.HistoryFEN);
+        if (match != null)
+        {
+            // Khi trò chơi kết thúc, lưu kết quả và xuất lịch sử
+            match.Result = model.Result.ToString();
+            // Loại bỏ các chuỗi FEN trùng lặp vaf
+            List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match.HistoryFEN);
 
-        MatchHistoryManager.SaveMatch(match); // Xuất trận đấu ra file bằng cách sử dụng MatchHistoryManager
-
+            MatchHistoryManager.SaveMatch(match); // Xuất trận đấu ra file bằng cách sử dụng MatchHistoryManager
+        }
         // Hiển thị màn hình kết thúc bàn cờ dựa với kết quả tương ứng
         ScreenManager.Instance.NavigateToScreen(
             new EndGameController(

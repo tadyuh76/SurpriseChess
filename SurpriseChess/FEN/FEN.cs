@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace SurpriseChess.FEN
-{
+namespace SurpriseChess;
+
     public static class FEN
     {
         private static readonly Dictionary<(PieceColor, PieceType), string> PieceChar = new()
@@ -110,13 +110,7 @@ namespace SurpriseChess.FEN
                     }
                     else
                     {
-                        Debug.Print(col.ToString());
-                        try
-                        {
-                            board.SetPieceAt(new Position(row, col), CreatePieceFromFEN(symbol));
-                        }
-                        catch (Exception ex) { Console.WriteLine("FEN Save bị lỗi, hãy thử lại."); }
-
+                        board.SetPieceAt(new Position(row, col), CreatePieceFromFEN(symbol));
                         col++;
                     }
                 }
@@ -195,4 +189,3 @@ namespace SurpriseChess.FEN
             return new Position(row, col);
         }
     }
-}

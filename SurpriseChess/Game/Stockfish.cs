@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace SurpriseChess;
+
 public class StockFish : IChessBot
 {
     private static readonly HttpClient client = new() { Timeout = TimeSpan.FromSeconds(5) };
@@ -90,7 +87,7 @@ public class StockfishAnalysisCache
             cache[fen] = analysis;
             return analysis;
         }
-        return null;
+        return new List<(Position, Position)> { };
     }
 
     public void CacheAnalysis(string fen, List<(Position, Position)> analysis)
