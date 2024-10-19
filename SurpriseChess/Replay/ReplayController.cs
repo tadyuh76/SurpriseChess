@@ -1,4 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Threading;
+using System.Linq;
 
 namespace SurpriseChess
 {
@@ -10,9 +14,6 @@ namespace SurpriseChess
         private readonly StockfishAnalysisCache analysisCache;
         private readonly Stopwatch inputCooldown;
         private const int CooldownMilliseconds = 1200; // 1.2 second input cooldown
-       
-
-
 
         public ReplayController(ReplayModel model, ReplayView view)
         {
@@ -23,37 +24,41 @@ namespace SurpriseChess
             this.inputCooldown = new Stopwatch();
         }
 
-
         public void Run()
         {
             bool isRunning = true;
             while (isRunning)
             {
-                
-                DisplayBoardAndAnalysisAsync().Wait();
+                DisplayBoardAndAnalysisAsync();
                 isRunning = HandleUserInput();
             }
         }
 
-        public async Task DisplayBoardAndAnalysisAsync()
+        public void DisplayBoardAndAnalysisAsync()
         {
-            try
+            string actualNextMove = model.DetermineActualNextMove();
+
+            // Render the board immediately with the actual move
+            view.RenderBoard(model.CurrentBoard, actualNextMove, "");
+            view.DisplayMoveInfo(actualNextMove, "Loading...");
+
+            // Start the analysis in the background
+            Task.Run(async () =>
             {
-                string actualNextMove = model.DetermineActualNextMove();
-                view.DisplayMoveInfo(actualNextMove, "Loading...");
-                
+                try
+                {
+                    List<(Position, Position)> bestMoves = await model.GetBestMovesAsync(stockfish, analysisCache);
+                    string bestMove = model.ConvertMoveToString(bestMoves.FirstOrDefault());
 
-                List<(Position, Position)> bestMoves = await model.GetBestMovesAsync(stockfish, analysisCache);
-                string bestMove = model.ConvertMoveToString(bestMoves.FirstOrDefault());
-
-                view.RenderBoard(model.CurrentBoard, actualNextMove, bestMove);
-                view.DisplayMoveInfo(actualNextMove, bestMove + "      ");
-
-            }
-            catch (Exception ex)
-            {
-                view.DisplayError($"Lỗi phân tích nước đi: {ex.Message}");
-            }
+                    // Update the board and move info with the best move
+                    view.RenderBoard(model.CurrentBoard, actualNextMove, bestMove);
+                    view.DisplayMoveInfo(actualNextMove, bestMove);
+                }
+                catch (Exception ex)
+                {
+                    view.DisplayError($"Lỗi phân tích nước đi: {ex.Message}");
+                }
+            });
         }
 
         private bool HandleUserInput()

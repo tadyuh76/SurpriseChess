@@ -17,7 +17,8 @@ public class StockFish : IChessBot
         {
             fen,
             options = new { UCI_Chess960 = true },
-            num_moves = NumMoves
+            num_moves = NumMoves,
+            depth = 10
         };
 
         var jsonContent = new StringContent(
