@@ -73,7 +73,7 @@ public class HomeController : IController
                 break;
             case 2:
                 ScreenManager.Instance.NavigateToScreen(new TutorialController(
-                    new TutorialModel(),
+                    
                     new TutorialView()
                 ));
                 break;
@@ -85,4 +85,5 @@ public class HomeController : IController
                 break;
         }
     }
+
 }
