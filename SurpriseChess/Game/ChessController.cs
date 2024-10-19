@@ -1,4 +1,8 @@
-﻿namespace SurpriseChess;
+﻿using SurpriseChess.MatchHistory;
+using System.Text.RegularExpressions;
+using SurpriseChess.FEN;
+
+namespace SurpriseChess;
 
 internal class ChessController : IController
 {
@@ -8,6 +12,7 @@ internal class ChessController : IController
 
     private GameMode gameMode = GameMode.PlayerVsPlayer;
     private int? difficultyLevel;
+    private Match? match;
 
     public ChessController(ChessModel model, ChessView view, GameMode gameMode, int? difficultyLevel = null)
     {
@@ -15,6 +20,13 @@ internal class ChessController : IController
         this.view = view;   // Khởi tạo View
         this.gameMode = gameMode; // Chế độ chơi
         this.difficultyLevel = difficultyLevel; // Mức độ khó
+
+        match = new Match
+        {
+            MatchDate = DateTime.Now,
+            HistoryFEN = new List<string>(), // Khởi tạo danh sách trống ban đầu
+            Result = "InProgress" // Trạng thái trận đấu ban đầu
+        };
     }
    
     // Chạy trò chơi
@@ -25,8 +37,22 @@ internal class ChessController : IController
         while (model.Result == GameResult.InProgress) // Khi trò chơi đang diễn ra
         {
             RenderView();
+
+            // Ghi lại FEN của trạng thái bàn cờ hiện tại
+            string currentFEN = FEN.FEN.GetFEN(model.Board, model.GameState);
+
+            // Sử dụng AddFEN với một danh sách FEN (dù chỉ là một FEN ở đây)
+            match?.AddFEN(new List<string> { currentFEN });
+
             ListenKeyStroke(); // Lắng nghe phím bấm
+
         }
+        // Khi trò chơi kết thúc, lưu kết quả và xuất lịch sử
+        match.Result = model.Result.ToString();
+        // Loại bỏ các chuỗi FEN trùng lặp vaf
+        List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match?.HistoryFEN);
+
+        MatchHistoryManager.SaveMatch(match); // Xuất trận đấu ra file bằng cách sử dụng MatchHistoryManager
 
         // Hiển thị màn hình kết thúc bàn cờ dựa với kết quả tương ứng
         ScreenManager.Instance.NavigateToScreen(

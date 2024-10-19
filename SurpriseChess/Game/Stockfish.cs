@@ -54,23 +54,53 @@ public class StockFish : IChessBot
                 if (item.TryGetProperty("Move", out JsonElement moveElement))
                 {
                     string move = moveElement.GetString()!;
+
                     Position startPosition = FEN.FENToPosition(move[..2]);
                     Position endPosition = FEN.FENToPosition(move[2..4]);
                     bestMoves.Add((startPosition, endPosition));
-
-
                 }
                
-
             }
 
             return bestMoves;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"Error fetching best moves: {ex.Message}");
             return new List<(Position, Position)>();
         }
+    }
+}
+
+public class StockfishAnalysisCache
+{
+    private readonly Dictionary<string, List<(Position, Position)>> cache = new();
+    private readonly int maxCacheSize;
+
+    public StockfishAnalysisCache(int maxCacheSize = 1000)
+    {
+        this.maxCacheSize = maxCacheSize;
+    }
+
+    public List<(Position, Position)> GetCachedAnalysis(string fen)
+    {
+        if (cache.TryGetValue(fen, out var analysis))
+        {
+            // Move the accessed item to the end of the dictionary to implement LRU
+            cache.Remove(fen);
+            cache[fen] = analysis;
+            return analysis;
+        }
+        return null;
+    }
+
+    public void CacheAnalysis(string fen, List<(Position, Position)> analysis)
+    {
+        if (cache.Count >= maxCacheSize)
+        {
+            // Remove the least recently used item (first item in the dictionary)
+            cache.Remove(cache.Keys.First());
+        }
+        cache[fen] = analysis;
     }
 }
 

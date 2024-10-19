@@ -85,6 +85,7 @@ public static class ChessUtils
         { "Tượng", "🥷" },
         { "Mã", "🏇" },
         { "Tốt", "💂" },
+
     };
     public static Dictionary<PieceType, int> PiecePoints = new()
     {
