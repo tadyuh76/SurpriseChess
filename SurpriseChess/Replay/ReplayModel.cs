@@ -121,20 +121,20 @@ public class ReplayModel
     public async Task<List<(Position, Position)>> GetBestMovesAsync(StockFish stockfish, StockfishAnalysisCache analysisCache)
     {
         string currentFen = GetCurrentFEN();
-        var cachedMoves = analysisCache.GetCachedAnalysis(currentFen);
-        if (cachedMoves != null)
-        {
-            return cachedMoves;
-        }
+        //var cachedMoves = analysisCache.GetCachedAnalysis(currentFen);
+        //if (cachedMoves != null)
+        //{
+        //    return cachedMoves;
+        //}
         var bestMoves = await stockfish.GetBestMoves(currentFen);
-        analysisCache.CacheAnalysis(currentFen, bestMoves);
+        //analysisCache.CacheAnalysis(currentFen, bestMoves);
         return bestMoves;
     }
 
     public string ConvertMoveToString((Position, Position) move)
     {
-        if (move == default)
-            return "None";
+        //if (move == default)
+        //    return "None";
         return $"{FEN.PositionToFEN(move.Item1)}{FEN.PositionToFEN(move.Item2)}";
     }
 }

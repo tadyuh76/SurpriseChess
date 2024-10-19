@@ -23,14 +23,8 @@ public class Match
     }
 
     // Method để thêm string FEN và ko cho lặp lại
-    public void AddFEN(List<string> newFENs)
+    public void AddFEN(string newFEN)
     {
-        foreach (var fen in newFENs)
-        {
-            if (HistoryFEN.Count == 0 || HistoryFEN[^1] != fen)
-            {
-                HistoryFEN.Add(fen);
-            }
-        }
+        HistoryFEN.Add(newFEN);
     }
 }

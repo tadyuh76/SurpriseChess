@@ -36,7 +36,7 @@ namespace SurpriseChess
             // Render bảng
             for (int row = 0; row < 8; row++)
             {
-                Console.Write($"{rowLabels[row]}");
+                Console.Write($" {rowLabels[row]} ");
                 for (int col = 0; col < 8; col++)
                 {
                     Position currentPosition = new Position(row, col);
@@ -93,7 +93,7 @@ namespace SurpriseChess
         // Hiển thị tên cột dưới bàn cờ
         static void DisplayColumnLabels()
         {
-            Console.Write("   ");
+            Console.Write("    ");
             foreach (string label in columnLabels)
             {
                 Console.Write($"{label}   ");
@@ -104,18 +104,39 @@ namespace SurpriseChess
         private void PrintDescription()
         {
             int currentLine = 0;
-            PrintPieceDescription("Trắng", ChessUtils.WhitePieceEmojis, ref currentLine);
-            PrintPieceDescription("Đen", ChessUtils.BlackPieceEmojis, ref currentLine);
+            PrintPieceDescription("Vương quốc", ChessUtils.WhitePieceEmojis, currentLine);
+            PrintPieceDescription("Rừng sâu", ChessUtils.BlackPieceEmojis, currentLine);
+            PrintSpecialSquareDescription(ref currentLine);
         }
-
-        private void PrintPieceDescription(string pieceName, Dictionary<string, string> emojisDict, ref int currentLine)
+        private void PrintSpecialSquareDescription(ref int currentLine)
         {
-            Console.SetCursorPosition(40, currentLine++);
+            int offset = 77; // Điều chỉnh vị trí in trên màn hình
+
+            Console.SetCursorPosition(offset, currentLine++);
+            Console.WriteLine("Ô đặc biệt:");
+
+            Console.SetCursorPosition(offset, currentLine++);
+            Console.BackgroundColor = ConsoleColor.Cyan;
+            Console.Write("   "); // In một khối màu để mô tả ô được bảo vệ
+            Console.ResetColor();
+            Console.WriteLine(": Ô được bảo vệ");
+
+            Console.SetCursorPosition(offset, currentLine++);
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.Write("   "); // In một khối màu để mô tả ô bị trói
+            Console.ResetColor();
+            Console.WriteLine(": Ô bị trói");
+        }
+        // In mô tả từng loại quân cờ với biểu tượng và tên tương ứng
+        private void PrintPieceDescription(string pieceName, Dictionary<string, string> emojisDict, int currentLine)
+        {
+            int offset = pieceName == "Vương quốc" ? 40 : 60;
+            Console.SetCursorPosition(offset, currentLine++);
             Console.WriteLine($"{pieceName}: ");
             foreach (var pieceDescription in emojisDict)
             {
-                Console.SetCursorPosition(40, currentLine++);
-                Console.WriteLine($"{pieceDescription.Value}: {pieceDescription.Key}");
+                Console.SetCursorPosition(offset, currentLine++);
+                Console.WriteLine($"{pieceDescription.Value}: {pieceDescription.Key} ");
             }
         }
 

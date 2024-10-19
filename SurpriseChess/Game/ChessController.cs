@@ -22,17 +22,17 @@ internal class ChessController : IController
         match = new Match
         {
             MatchDate = DateTime.Now,
-            HistoryFEN = new List<string>(), // Khởi tạo danh sách trống ban đầu
-            Result = "InProgress" // Trạng thái trận đấu ban đầu
+            HistoryFEN = new List<string>(), 
+            Result = "InProgress" 
         };
         // Khởi tạo listener cho model mỗi khi có update từ board
         this.model.BoardUpdated += OnBoardUpdated;
     }
 
-    // Method to handle model updates
+    // Hàm được tạo ra để rerender view mỗi khi bot thực hiện nước đi
     private void OnBoardUpdated()
     {
-        view.Render(model, cursorX, cursorY); // Update the view based on the model state
+        view.Render(model, cursorX, cursorY); 
     }
 
     // Chạy trò chơi
@@ -47,14 +47,17 @@ internal class ChessController : IController
             // Ghi lại FEN của trạng thái bàn cờ hiện tại
             string currentFEN = FEN.GetFEN(model.Board, model.GameState);
 
-            // Sử dụng AddFEN với một danh sách FEN (dù chỉ là một FEN ở đây)
-            match!.AddFEN(new List<string> { currentFEN });
+            match!.AddFEN(currentFEN);
 
             ListenKeyStroke(); // Lắng nghe phím bấm
         }
 
         // Khi trò chơi kết thúc, lưu kết quả và xuất lịch sử
+        string finalFEN = FEN.GetFEN(model.Board, model.GameState);
+        match!.AddFEN(finalFEN);
+
         match!.Result = model.Result.ToString();
+
         // Loại bỏ các chuỗi FEN trùng lặp 
         List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match.HistoryFEN);
 
@@ -92,8 +95,6 @@ internal class ChessController : IController
         if (model.HighlightedMoves.Contains(clickedSquare))
         {
             model.HandleMoveTo(clickedSquare);
-            Debug.Print("Moved");
-            //RenderView();
             return;
         }
 

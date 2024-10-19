@@ -7,21 +7,7 @@
 
         public MatchHistoryModel()
         {
-            Matches = LoadMatchHistory();
-        }
-
-        private List<Match> LoadMatchHistory()
-        {
-            var matches = MatchHistoryManager.LoadMatches();
-            if (matches == null || matches.Count == 0)
-            {
-                return new List<Match>
-                {
-                    new Match { Id = 1, MatchDate = DateTime.Now.AddDays(-5), Result = "1-0" },
-                    new Match { Id = 2, MatchDate = DateTime.Now.AddDays(-3), Result = "0-1" }
-                };
-            }
-            return matches;
+            Matches = MatchHistoryManager.LoadMatches();
         }
 
         public Match? GetMatchById(int id)

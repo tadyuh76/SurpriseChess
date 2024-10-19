@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Threading;
 using System.Linq;
 
 namespace SurpriseChess
@@ -13,7 +12,7 @@ namespace SurpriseChess
         private readonly StockFish stockfish;
         private readonly StockfishAnalysisCache analysisCache;
         private readonly Stopwatch inputCooldown;
-        private const int CooldownMilliseconds = 1200; // 1.2 second input cooldown
+        private const int CooldownMilliseconds = 500; // Cooldown 500ms giữa các lần nhấn phím
 
         public ReplayController(ReplayModel model, ReplayView view)
         {
@@ -22,6 +21,7 @@ namespace SurpriseChess
             this.stockfish = new StockFish(depth: 10);
             this.analysisCache = new StockfishAnalysisCache();
             this.inputCooldown = new Stopwatch();
+            this.inputCooldown.Start(); // Bắt đầu đo thời gian ngay khi khởi tạo
         }
 
         public void Run()
@@ -29,8 +29,8 @@ namespace SurpriseChess
             bool isRunning = true;
             while (isRunning)
             {
-                DisplayBoardAndAnalysisAsync();
-                isRunning = HandleUserInput();
+                DisplayBoardAndAnalysisAsync(); // Hiển thị bàn cờ và phân tích nước đi
+                isRunning = HandleUserInput();  // Xử lý đầu vào từ người dùng
             }
         }
 
@@ -38,63 +38,59 @@ namespace SurpriseChess
         {
             string actualNextMove = model.DetermineActualNextMove();
 
-            // Render the board immediately with the actual move
+            // Hiển thị bàn cờ ngay lập tức với nước đi hiện tại
             view.RenderBoard(model.CurrentBoard, actualNextMove, "");
-            view.DisplayMoveInfo(actualNextMove, "Loading...");
+            view.DisplayMoveInfo(actualNextMove, "Đang tải...");
 
-            // Start the analysis in the background
-            Task.Run(async () =>
-            {
-                try
-                {
-                    List<(Position, Position)> bestMoves = await model.GetBestMovesAsync(stockfish, analysisCache);
-                    string bestMove = model.ConvertMoveToString(bestMoves.FirstOrDefault());
+            // Bắt đầu phân tích nước đi trong nền (background)
+            GetBestMove();
+        }
 
-                    // Update the board and move info with the best move
-                    view.RenderBoard(model.CurrentBoard, actualNextMove, bestMove);
-                    view.DisplayMoveInfo(actualNextMove, bestMove);
-                }
-                catch (Exception ex)
-                {
-                    view.DisplayError($"Lỗi phân tích nước đi: {ex.Message}");
-                }
-            });
+        public async void GetBestMove()
+        {
+            var bestMoves = await stockfish.GetBestMoves(model.GetCurrentFEN());
+            
+            string bestMove = bestMoves.Count == 0 ? "None" : model.ConvertMoveToString(bestMoves[0]);
+            string actualNextMove = model.DetermineActualNextMove();
+
+            // Cập nhật bàn cờ và thông tin nước đi tốt nhất
+            view.RenderBoard(model.CurrentBoard, actualNextMove, bestMove);
+            view.DisplayMoveInfo(actualNextMove, bestMove);
         }
 
         private bool HandleUserInput()
         {
-            if (inputCooldown.IsRunning && inputCooldown.ElapsedMilliseconds < CooldownMilliseconds)
+            ConsoleKeyInfo keyInfo = Console.ReadKey();
+
+            // Kiểm tra xem thời gian cooldown đã đủ chưa
+            if (inputCooldown.ElapsedMilliseconds < CooldownMilliseconds)
             {
-                // If the cooldown period hasn't elapsed, wait for the remaining time
-                int remainingTime = CooldownMilliseconds - (int)inputCooldown.ElapsedMilliseconds;
-                Thread.Sleep(remainingTime);
+                // Nếu chưa đủ thời gian, bỏ qua lần nhập này
+                return true;
             }
 
-            // Reset and start the cooldown timer
-            inputCooldown.Restart();
-
-            ConsoleKeyInfo keyInfo = view.GetUserInput();
+            // Chỉ reset và bắt đầu lại đồng hồ nếu nhập vào hợp lệ
             bool inputHandled = false;
 
             switch (keyInfo.Key)
             {
                 case ConsoleKey.RightArrow:
-                    model.MoveNext();
+                    model.MoveNext();  // Chuyển đến nước đi tiếp theo
                     inputHandled = true;
                     break;
                 case ConsoleKey.LeftArrow:
-                    model.MovePrevious();
+                    model.MovePrevious();  // Quay lại nước đi trước
                     inputHandled = true;
                     break;
                 case ConsoleKey.Backspace:
-                    return false;
+                    ScreenManager.Instance.BackToHomeScreen();
+                    break; // Thoát vòng lặp Run
             }
 
-            // If input wasn't handled (i.e., an unrecognized key was pressed),
-            // we don't want to enforce the cooldown period
-            if (!inputHandled)
+            // Chỉ restart lại cooldown nếu đã xử lý nhập vào thành công
+            if (inputHandled)
             {
-                inputCooldown.Reset();
+                inputCooldown.Restart();
             }
 
             return true;
