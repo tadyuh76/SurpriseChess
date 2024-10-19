@@ -10,12 +10,13 @@ public class StockFish : IChessBot
 {
     private static readonly HttpClient client = new() { Timeout = TimeSpan.FromSeconds(5) };
     private const string ApiUrl = "https://tadyuh76.pythonanywhere.com/best_moves";
-    
-    private readonly int numMoves; // Số nước đi sẽ được lấy từ CampaignNode
 
-    public StockFish(int numMoves)
+    private const int numMoves = 3; 
+    private readonly int depth; // depth được lấy từ CampaignNode
+
+    public StockFish(int depth)
     {
-        this.numMoves = numMoves; // Truyền số nước đi khi khởi tạo
+        this.depth = depth; // Truyền số depth được khởi tạo
     }
 
     public async Task<List<(Position, Position)>> GetBestMoves(string fen)
@@ -25,7 +26,8 @@ public class StockFish : IChessBot
         {
             fen,
             options = new { UCI_Chess960 = true },
-            num_moves = numMoves // Số nước đi giờ là từ campaign
+            num_moves = numMoves, 
+            depths = depth  
         };
 
         var jsonContent = new StringContent(
@@ -47,7 +49,6 @@ public class StockFish : IChessBot
 
             // Lấy và in ra các nước đi tốt nhất
             List<(Position, Position)> bestMoves = new();
-
             foreach (JsonElement item in root.EnumerateArray())
             {
                 if (item.TryGetProperty("Move", out JsonElement moveElement))
@@ -57,10 +58,9 @@ public class StockFish : IChessBot
                     Position endPosition = FEN.FENToPosition(move[2..4]);
                     bestMoves.Add((startPosition, endPosition));
 
-                  
-                  
 
                 }
+               
 
             }
 

@@ -71,7 +71,7 @@ public class CampaignView
                 var selected = map[selectedNode.x, selectedNode.y];
                 if (selected != null)
                 {
-                    // Chuyển ngay sang bàn cờ với số nummove tương ứng
+                    // Chuyển ngay sang bàn cờ với số depth tương ứng
                     StartChessBoard(selected);
                     return;
                 }
@@ -83,7 +83,7 @@ public class CampaignView
     }
     private void StartChessBoard(CampaignNode node)
     {
-        int numMoves = GetStockfishNumMoves(node.Difficulty); // Giả lập số nước đi từ Stockfish
+        int depth  = GetStockfishNumMoves(node.Difficulty); // Giả lập số depth  đi từ Stockfish
 
         Console.Clear();
 
@@ -246,7 +246,7 @@ public class CampaignView
         {
             var node = map[row, col];
             if (node != null)
-            {
+            {   
                 if (row == selectedNode.x && col == selectedNode.y)
                     Console.ForegroundColor = ConsoleColor.Green;
 
@@ -261,7 +261,7 @@ public class CampaignView
         }
         Console.WriteLine();
     }
-   
+    
 
 
 
