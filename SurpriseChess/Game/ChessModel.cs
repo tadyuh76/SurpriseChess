@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Text.Json;
-
 
 namespace SurpriseChess;
 
@@ -8,10 +6,13 @@ public class ChessModel
 {
     public Board Board { get; private set; } = null!;
     private readonly IBoardSetup boardSetup;
+
     private readonly IChessBot chessBot;
     private Arbiter arbiter = null!;
-   // private EffectApplier effectApplier = null!;
+    private EffectApplier effectApplier = null!;
+ 
     private readonly Random random = new();
+
 
     public GameMode GameMode { get; private set; }
     public GameState GameState { get; private set; } = null!;
@@ -22,8 +23,8 @@ public class ChessModel
 
     public ChessModel(IBoardSetup boardSetup, IChessBot chessBot)
     {
-        this.boardSetup = boardSetup;
-        this.chessBot = chessBot;
+        this.boardSetup = boardSetup; // Khởi tạo cấu hình bàn cờ.
+        this.chessBot = chessBot; // Khởi tạo chess bot.
     }
 
     public void NewGame(GameMode gameMode)
@@ -33,9 +34,11 @@ public class ChessModel
         GameState = new(Board);
         Result = GameResult.InProgress;
         arbiter = new Arbiter(Board, GameState);
-        //effectApplier = new EffectApplier(Board);
+        effectApplier = new EffectApplier(Board);
         SelectedPosition = null;
         HighlightedMoves = new HashSet<Position>();
+        effectApplier = new EffectApplier(Board);
+
     }
 
     public void Select(Position position)
@@ -57,13 +60,14 @@ public class ChessModel
         GameState.UpdateStateAfterMove(SelectedPosition, destination);
         Board.MakeMove(SelectedPosition, destination);
 
-       // effectApplier.ClearEffects();
-        //effectApplier.ApplyEffects(destination);
+        // Gắn hiệu ứng bất ngờ vào bàn cờ
+        effectApplier.ClearEffects();
+        effectApplier.ApplyEffects(destination);
 
         Result = arbiter.GetGameResult(GameState.CurrentPlayerColor);
-        Deselect();
+        Deselect()
 
-        // Kiểm tra nếu bot có cần khởi tạo nước đi
+        // Kiểm tra nếu máy có thể thực hiện nước cờ tiếp theo
         if (Result == GameResult.InProgress && IsBotsTurn)
         {
            await HandleBotMove();
@@ -105,7 +109,7 @@ public class ChessModel
                 return (source, destination);
             }
         }
-        // Nếu bot không lấy đuọcư nước đi từ Stockfish, đi một nước ngẫu nhiên
+        // Nếu bot không lấy được nước đi từ Stockfish, đi một nước ngẫu nhiên
         return GetRandomMove();
     }
 

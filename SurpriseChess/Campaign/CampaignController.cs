@@ -57,7 +57,8 @@ public class CampaignController : IController
                     StartSelectedCampaign();
                     break;
                 case ConsoleKey.Backspace:
-                    HandleNavigateBack();
+                    // Trở về màn hình chính
+                    ScreenManager.Instance.BackToHomeScreen();
                     return;
 
             }
@@ -93,16 +94,4 @@ public class CampaignController : IController
         );
         chessController.Run();
     }
-
-    private void HandleNavigateBack()
-    {
-        Console.WriteLine("Quay lại màn hình chờ...");
-        ScreenManager.Instance.NavigateToScreen(new HomeController(
-            new HomeModel(),
-            new HomeView()
-        ));
-    }
 }
-
-
-

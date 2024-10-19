@@ -16,7 +16,7 @@ internal class ChessController : IController
         this.gameMode = gameMode; // Chế độ chơi
         this.difficultyLevel = difficultyLevel; // Mức độ khó
     }
-
+   
     // Chạy trò chơi
     public void Run()
     {
@@ -27,6 +27,15 @@ internal class ChessController : IController
             RenderView();
             ListenKeyStroke(); // Lắng nghe phím bấm
         }
+
+        // Hiển thị màn hình kết thúc bàn cờ dựa với kết quả tương ứng
+        ScreenManager.Instance.NavigateToScreen(
+            new EndGameController(
+                new EndGameView(),
+                model.Result
+            )    
+        );
+
     }
 
     private void RenderView()
@@ -50,7 +59,7 @@ internal class ChessController : IController
         else if (key == ConsoleKey.UpArrow && cursorY > 0) cursorY--;
         else if (key == ConsoleKey.DownArrow && cursorY < 7) cursorY++;
         else if (key == ConsoleKey.Enter) HandleBoardClick(new Position(cursorY, cursorX));
-        else if (key == ConsoleKey.Backspace) HandleNavigateBack();
+        else if (key == ConsoleKey.Backspace) ScreenManager.Instance.BackToHomeScreen();
     }
 
     // Xử lý nhấp chuột vào ô
@@ -76,23 +85,5 @@ internal class ChessController : IController
         {
             model.Deselect();
         }
-    }
-
-    private void HandleNavigateBack()
-    {
-        // Yêu cầu người dung xác nhận thoát trò chơi
-        ConsoleKey keyPressed;
-
-        keyPressed = Console.ReadKey().Key;
-
-        if (keyPressed == ConsoleKey.Backspace)
-        {
-            // Trở về màn hình chính
-            ScreenManager.Instance.NavigateToScreen(new HomeController(
-                new HomeModel(),
-                new HomeView()
-            ));
-        }
-
-    }
+    }    
 }

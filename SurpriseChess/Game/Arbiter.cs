@@ -1,4 +1,6 @@
-﻿namespace SurpriseChess;
+﻿using System.Diagnostics;
+
+namespace SurpriseChess;
 
 // Chịu trách nhiệm xác định tính hợp lệ của các nước đi và kết quả của trò chơi
 public class Arbiter
@@ -22,6 +24,7 @@ public class Arbiter
         if (piece == null) return legalMoves;  // Không có quân cờ nào để di chuyển
 
         Position currentKingPosition = LocateKing(piece.Color);
+
         foreach (Position destination in piece.GetMoves(board, source, gameState))
         {
             if (IsLegalMove(piece, source, destination, currentKingPosition))

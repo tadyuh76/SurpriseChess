@@ -29,5 +29,5 @@ public interface IChessBot
 // Giao diện IController định nghĩa phương thức cho điều khiển
 public interface IController
 {
-    void Run(); // Phương thức chạy điều khiển
+    public abstract void Run(); // Phương thức chạy điều khiển
 }
