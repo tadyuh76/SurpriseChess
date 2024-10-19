@@ -44,6 +44,7 @@ public class ChessModel
     public void Select(Position position)
     {
         SelectedPosition = position;
+        Debug.Print($"Selecting {FEN.PositionToFEN(position)}");
         HighlightedMoves = arbiter.GetLegalMoves(position);
     }
 
@@ -53,24 +54,24 @@ public class ChessModel
         HighlightedMoves.Clear();
     }
 
-    public async Task HandleMoveTo(Position destination)
+    public void HandleMoveTo(Position destination)
     {
         if (SelectedPosition == null) return;
 
         GameState.UpdateStateAfterMove(SelectedPosition, destination);
         Board.MakeMove(SelectedPosition, destination);
+        Debug.Print($"Moved to {FEN.PositionToFEN(destination)}");
 
-        // Gắn hiệu ứng bất ngờ vào bàn cờ
         effectApplier.ClearEffects();
         effectApplier.ApplyEffects(destination);
 
         Result = arbiter.GetGameResult(GameState.CurrentPlayerColor);
         Deselect();
 
-        // Kiểm tra nếu máy có thể thực hiện nước cờ tiếp theo
+        // Check if the bot needs to make a move
         if (Result == GameResult.InProgress && IsBotsTurn)
         {
-           await HandleBotMove();
+            HandleBotMove();
         }
     }
 
@@ -80,18 +81,16 @@ public class ChessModel
         && GameState.CurrentPlayerColor == PieceColor.Black
     );
 
-    public async Task HandleBotMove()
-
+    public async void HandleBotMove()
     {
-        if (chessBot == null) return;
         (Position source, Position destination) = await GetBotMove();
+        Debug.Print($"bot's gonna move: from {FEN.PositionToFEN(source)} to {FEN.PositionToFEN(destination)}");
         Select(source);
-
-        await Task.Delay(1000);  // Chờ 1s để người chơi thấy được nước đi
-
-        await HandleMoveTo(destination);
+        
+        await Task.Delay(1000);  // Wait 1s so the player has time to see the move
+        HandleMoveTo(destination);
     }
-   
+
 
     private async Task<(Position, Position)> GetBotMove()
     {
@@ -101,6 +100,11 @@ public class ChessModel
 
         // The bot doesn't know the special effects (paralysis and shield),
         // so check if the bot's move is legal before making it
+        Debug.Print($"legal moves at stockfish 1st move ({FEN.PositionToFEN(bestMoves[0].Item1)} {FEN.PositionToFEN(bestMoves[0].Item2)})");
+        foreach(var move in arbiter.GetLegalMoves(bestMoves[0].Item1))
+        {
+            Debug.Print(FEN.PositionToFEN(move));
+        }
         foreach ((Position source, Position destination) in bestMoves)
         {
             if (arbiter.GetLegalMoves(source).Contains(destination))
@@ -108,6 +112,7 @@ public class ChessModel
                 return (source, destination);
             }
         }
+        Debug.Print("Bot is choosing a random move");
         // Nếu bot không lấy được nước đi từ Stockfish, đi một nước ngẫu nhiên
         return GetRandomMove();
     }

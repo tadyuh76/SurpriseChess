@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 
 namespace SurpriseChess;
@@ -8,7 +9,7 @@ public class StockFish : IChessBot
     private static readonly HttpClient client = new() { Timeout = TimeSpan.FromSeconds(5) };
     private const string ApiUrl = "https://tadyuh76.pythonanywhere.com/best_moves";
 
-    private const int numMoves = 3; 
+    private const int numMoves = 1; 
     private readonly int depth; // depth được lấy từ CampaignNode
 
     public StockFish(int depth)
@@ -24,7 +25,7 @@ public class StockFish : IChessBot
             fen,
             options = new { UCI_Chess960 = true },
             num_moves = numMoves, 
-            depths = depth  
+            depth = depth  
         };
 
         var jsonContent = new StringContent(
@@ -54,6 +55,7 @@ public class StockFish : IChessBot
 
                     Position startPosition = FEN.FENToPosition(move[..2]);
                     Position endPosition = FEN.FENToPosition(move[2..4]);
+                    Debug.Print($"stockfish best move is: {move}");
                     bestMoves.Add((startPosition, endPosition));
                 }
                

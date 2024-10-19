@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace SurpriseChess;
 
 internal class ChessController : IController
@@ -37,24 +39,19 @@ internal class ChessController : IController
             // Ghi lại FEN của trạng thái bàn cờ hiện tại
             string currentFEN = FEN.GetFEN(model.Board, model.GameState);
 
-            if (match != null)
-            {
-                // Sử dụng AddFEN với một danh sách FEN (dù chỉ là một FEN ở đây)
-                match!.AddFEN(new List<string> { currentFEN });
-            }
+            // Sử dụng AddFEN với một danh sách FEN (dù chỉ là một FEN ở đây)
+            match!.AddFEN(new List<string> { currentFEN });
 
             ListenKeyStroke(); // Lắng nghe phím bấm
         }
-        if (match != null)
-        {
-            // Khi trò chơi kết thúc, lưu kết quả và xuất lịch sử
-            match.Result = model.Result.ToString();
-            // Loại bỏ các chuỗi FEN trùng lặp vaf
-            List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match.HistoryFEN);
 
-            MatchHistoryManager.SaveMatch(match); // Xuất trận đấu ra file bằng cách sử dụng MatchHistoryManager
-        }
-        // Hiển thị màn hình kết thúc bàn cờ dựa với kết quả tương ứng
+        // Khi trò chơi kết thúc, lưu kết quả và xuất lịch sử
+        match!.Result = model.Result.ToString();
+        // Loại bỏ các chuỗi FEN trùng lặp 
+        List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match.HistoryFEN);
+
+        MatchHistoryManager.SaveMatch(match); // Xuất trận đấu ra file bằng cách sử dụng MatchHistoryManager
+        
         ScreenManager.Instance.NavigateToScreen(
             new EndGameController(
                 new EndGameView(),
@@ -89,15 +86,16 @@ internal class ChessController : IController
     }
 
     // Xử lý nhấp chuột vào ô
-    private async Task HandleBoardClick(Position clickedSquare)
+    private void HandleBoardClick(Position clickedSquare)
     {
         if (model.IsBotsTurn) return;  // Không cho người chơi click nếu là lượt của bot
 
         // Nếu nhấp vào nước đi hợp lệ, di chuyển đến đó
         if (model.HighlightedMoves.Contains(clickedSquare))
         {
-            await model.HandleMoveTo(clickedSquare);
-            RenderView();
+            model.HandleMoveTo(clickedSquare);
+            Debug.Print("Moved");
+            //RenderView();
             return;
         }
 

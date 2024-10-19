@@ -12,7 +12,7 @@
 
         private List<Match> LoadMatchHistory()
         {
-            var matches = MatchHistory.MatchHistoryManager.LoadMatches();
+            var matches = MatchHistoryManager.LoadMatches();
             if (matches == null || matches.Count == 0)
             {
                 return new List<Match>

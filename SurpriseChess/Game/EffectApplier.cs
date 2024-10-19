@@ -47,7 +47,7 @@ public class EffectApplier
             ApplyShieldEffect(movedPiece.Color);
             return;
         }
-    //không áp dụng hiệu ứng nào (10%)
+        //không áp dụng hiệu ứng nào (10%)
     }
 
     //hàm xóa hiệu ứng trước khi áp dụng một hiệu ứng khác

@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace SurpriseChess;
-
+namespace SurpriseChess
+{
     public static class FEN
     {
         private static readonly Dictionary<(PieceColor, PieceType), string> PieceChar = new()
@@ -88,8 +88,9 @@ namespace SurpriseChess;
 
         public static string PositionToFEN(Position position)
         {
-            char file = (char)('a' + position.Col);  // Convert cột từ 0-7 sang a-h
-            char rank = (char)('1' + position.Row);  // Convert dòng từ 0-7 sang 1-8
+
+            char file = (char)('a' + position.Col);  // Chuyển đổi cột từ 0-7 sang a-h
+            char rank = (char)('1' + (7 - position.Row));  // Chuyển đổi dòng từ 0-7 sang 1-8
             return $"{file}{rank}";
         }
 
@@ -181,11 +182,12 @@ namespace SurpriseChess;
 
         public static Position FENToPosition(string fenSquare)
         {
-            char file = fenSquare[0]; // The letter part (a-h)
-            char rank = fenSquare[1]; // The number part (1-8)
-            int col = file - 'a';  // Convert file (column) from 'a'-'h' to 0-7
-            int row = rank - '1';  // Convert rank (row) from '1'-'8' to 0-7
+            char file = fenSquare[0]; // Phần chữ (a-h)
+            char rank = fenSquare[1]; // Phần số (1-8)
+            int col = file - 'a';  // Chuyển đổi file (cột) từ'a'-'h' sang 0-7
+            int row = 7 - (rank - '1');  // Chuyển đổi rank (dòng) từ '1'-'8' sang 0-7
 
             return new Position(row, col);
         }
     }
+}

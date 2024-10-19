@@ -33,6 +33,11 @@ public class Arbiter
             }
         }
 
+        //Debug.Print($"Legal moves at {FEN.PositionToFEN(source)}");
+        //foreach(var move in legalMoves)
+        //{
+        //    Debug.Print(FEN.PositionToFEN(move));
+        //}
         return legalMoves; // Trả về danh sách các nước đi hợp lệ
     }
 

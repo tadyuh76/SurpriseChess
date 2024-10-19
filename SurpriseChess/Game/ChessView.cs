@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using SurpriseChess.Game; // Thêm namespace để sử dụng ChessTimer
-
-namespace SurpriseChess;
-
+﻿namespace SurpriseChess
+{
     internal class ChessView
     {
         static string[] columnLabels = { "a", "b", "c", "d", "e", "f", "g", "h" };
@@ -14,22 +8,8 @@ namespace SurpriseChess;
         // Biến lưu trữ thời gian và quân cờ bị bắt
         private static int whiteTimeRemaining = 900; // 15 phút cho Trắng
         private static int blackTimeRemaining = 900; // 15 phút cho Đen
-      
-        private ChessTimer chessTimer;
 
-        // Vị trí của thời gian trên console
-        private (int left, int top) WhiteTimerPosition;
-        private (int left, int top) BlackTimerPosition;
 
-        // Đối tượng khóa để đảm bảo an toàn luồng
-        private readonly object ConsoleLock = new object();
-
-        public ChessView(TimeSpan initialTime)
-        {
-            chessTimer = new ChessTimer(initialTime);
-            chessTimer.TimeUpdated += ChessTimer_TimeUpdated;
-            chessTimer.TimeExpired += ChessTimer_TimeExpired;
-        }
 
         // Phương thức hiển thị toàn bộ bàn cờ, bao gồm các quân cờ và các ô được đánh dấu
         public void Render(Board board, Position? selectedPosition, HashSet<Position> highlightedMoves, PieceColor currentPlayerColor, int cursorX, int cursorY)
@@ -84,30 +64,42 @@ namespace SurpriseChess;
             }
             Console.WriteLine();
         }
-    
+
         // Phương thức để vẽ một ô cờ cụ thể
         private void DrawSquare(Board board, Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
         {
             // Thiết lập màu nền cho ô cờ dựa trên trạng thái của nó
             SetSquareBackgroundColor(board, position, selectedPosition, highlightedMoves, cursorX, cursorY);
 
-        // Phương thức để vẽ một ô cờ cụ thể
-        private void DrawSquare(Board board, Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
-        {
-            // Thiết lập màu nền cho ô cờ dựa trên trạng thái của nó
-            SetSquareBackgroundColor(position, selectedPosition, highlightedMoves, cursorX, cursorY);
 
-            // Hiển thị quân cờ hoặc khoảng trống nếu không có quân cờ
             Piece? piece = board.GetPieceAt(position);
-            Console.Write($" {piece?.DisplaySymbol ?? "  "} ");
+            //Nếu quân cờ không phải là khoảng trống và hiệu ứng toàn hình được áp dụng
+            if (piece != null && piece.IsInvisible == true)
+            {
+                Console.Write("    ");
+            }
+            else
+            {
+                // Hiển thị quân cờ hoặc khoảng trống nếu không có quân cờ
+                Console.Write($" {piece?.DisplaySymbol ?? "  "} ");
+            }
+
         }
 
         // Phương thức hỗ trợ để thiết lập màu nền của ô cờ
-        private void SetSquareBackgroundColor(Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
+        private void SetSquareBackgroundColor(Board board, Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
         {
+            Piece? piece = board.GetPieceAt(position);
+            // Kiểm tra xem con trỏ hiện tại có nằm trên ô này không
             bool isCursor = (position.Col == cursorX && position.Row == cursorY);
+            // Kiểm tra xem ô này có phải là một nước đi hợp lệ được đánh dấu không
             bool isHighlighted = highlightedMoves.Contains(position);
+            // Kiểm tra xem ô này có phải là ô đang được chọn không
             bool isSelected = (selectedPosition == position);
+            // Kiểm tra xem ô này có bị tê liệt không
+            bool isParalyzed = piece != null && piece.IsParalyzed == true;
+            // Kiểm tra xem ô này có được bảo vệ không
+            bool isShielded = piece != null && piece.IsShielded == true;
 
             if (isCursor)
             {
@@ -116,6 +108,16 @@ namespace SurpriseChess;
             else if (isHighlighted)
             {
                 Console.BackgroundColor = ConsoleColor.Yellow;
+            }
+            else if (isParalyzed)
+            {
+                // Nếu bị tê liệt, tô nền màu hồng đậm
+                Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            }
+            else if (isShielded)
+            {
+                // Nếu được bảo vệ, tô nên xanh nhạt
+                Console.BackgroundColor = ConsoleColor.Cyan;
             }
             else if (isSelected)
             {
@@ -131,9 +133,10 @@ namespace SurpriseChess;
             }
         }
 
-        // Hiển thị lượt chơi hiện tại (Vương quốc hoặc Rừng sâu)
+        // Hiển thị lượt chơi hiện tại (Trắng hoặc Đen)
         private void DisplayCurrentTurn(PieceColor currentPlayerColor)
         {
+            Console.WriteLine();
             Console.SetCursorPosition(40, 3);
             Console.WriteLine(currentPlayerColor == PieceColor.White ? "Lượt chơi của Vương quốc" : "Lượt chơi của Rừng sâu");
         }
@@ -144,132 +147,70 @@ namespace SurpriseChess;
             int currentLine = 5;
             PrintPieceDescription("Vương quốc", ChessUtils.WhitePieceEmojis, currentLine);
             PrintPieceDescription("Rừng sâu", ChessUtils.BlackPieceEmojis, currentLine);
+            PrintSpecialSquareDescription(ref currentLine);
         }
+        private void PrintSpecialSquareDescription(ref int currentLine)
+        {
+            int offset = 77; // Điều chỉnh vị trí in trên màn hình
 
+            Console.SetCursorPosition(offset, currentLine++);
+            Console.WriteLine("Ô đặc biệt:");
+
+            Console.SetCursorPosition(offset, currentLine++);
+            Console.BackgroundColor = ConsoleColor.Cyan;
+            Console.Write("   "); // In một khối màu để mô tả ô được bảo vệ
+            Console.ResetColor();
+            Console.WriteLine(": Ô được bảo vệ");
+
+            Console.SetCursorPosition(offset, currentLine++);
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.Write("   "); // In một khối màu để mô tả ô bị trói
+            Console.ResetColor();
+            Console.WriteLine(": Ô bị trói");
+        }
         // In mô tả từng loại quân cờ với biểu tượng và tên tương ứng
         private void PrintPieceDescription(string pieceName, Dictionary<string, string> emojisDict, int currentLine)
         {
             int offset = pieceName == "Vương quốc" ? 40 : 60;
+            Console.SetCursorPosition(offset, currentLine++);
+            Console.WriteLine($"{pieceName}: ");
             foreach (var pieceDescription in emojisDict)
             {
                 Console.SetCursorPosition(offset, currentLine++);
-                Console.WriteLine($"{pieceDescription.Value}: {pieceDescription.Key}");
+                Console.WriteLine($"{pieceDescription.Value}: {pieceDescription.Key} ");
             }
         }
 
-        // Hiển thị quân cờ bị bắt và đồng hồ cho Rừng sâu ở trên
-        private void DisplayBlackCapturedAndTimer()
+        // Hiển thị quân cờ bị bắt và đồng hồ cho Đen ở trên
+        private void DisplayBlackCapturedAndTimer(Board board)
         {
-            lock (ConsoleLock)
-            {
-                Console.WriteLine($"Rừng sâu đã bắt: {GetCapturedPieces(PieceColor.White)}");
-
-                // In tiêu đề thời gian
-                Console.Write($"Thời gian còn lại của Rừng sâu: ");
-
-                // Lưu vị trí của đồng hồ ngay trước khi in thời gian
-                int left = Console.CursorLeft;
-                int top = Console.CursorTop;
-                BlackTimerPosition = (left, top);
-
-                // In thời gian
-                Console.WriteLine(FormatTime(chessTimer.GetBlackTime()));
-                Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
-            }
+            Console.Write($"Rừng sâu đã bắt: {GetCapturedPieces(board, PieceColor.Black)}"); //hiển thị các quân bị bắt
+            Console.WriteLine($" ({board.GetPlayerScore(PieceColor.Black)}đ)"); //hiển thị điểm
+            Console.WriteLine($"Thời gian còn lại của Rừng sâu: {FormatTime(blackTimeRemaining)}");  //hiển thị thời gian còn lại       
+            Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
         }
 
-
-        // Hiển thị quân cờ bị bắt và đồng hồ cho Vương quốc ở dưới
-        private void DisplayWhiteCapturedAndTimer()
+        // Hiển thị quân cờ bị bắt và đồng hồ cho Trắng ở dưới
+        private void DisplayWhiteCapturedAndTimer(Board board)
         {
-            lock (ConsoleLock)
-            {
-                Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
-                Console.WriteLine($"Vương quốc đã bắt: {GetCapturedPieces(PieceColor.Black)}");
-
-                // In tiêu đề thời gian
-                Console.Write($"Thời gian còn lại của Vương quốc: ");
-
-                // Lưu vị trí của đồng hồ ngay trước khi in thời gian
-                int left = Console.CursorLeft;
-                int top = Console.CursorTop;
-                WhiteTimerPosition = (left, top);
-
-                // In thời gian
-                Console.WriteLine(FormatTime(chessTimer.GetWhiteTime()));
-            }
+            Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
+            Console.Write($"Vương quốc đã bắt: {GetCapturedPieces(board, PieceColor.White)}"); //hiển thị các quân bị bắt
+            Console.WriteLine($" ({board.GetPlayerScore(PieceColor.White)}đ)"); //hiển thị điểm
+            Console.WriteLine($"Thời gian còn lại của Vương quốc: {FormatTime(whiteTimeRemaining)}"); //hiển thị thời gian còn lại
         }
 
-
-        // Lấy danh sách quân cờ bị bắt cho mỗi bên
-        private string GetCapturedPieces(PieceColor color)
+        // Lấy danh sách quân cờ bị bắt cho mỗi bên từ Board
+        private string GetCapturedPieces(Board board, PieceColor color)
         {
-            return string.Join(", ", capturedPieces[color].Select(p => p.DisplaySymbol));
+            return string.Join(", ", board.GetCapturedPieces(color).Select(p => p.DisplaySymbol)); //in ra các biểu tượng quân bị bắt
         }
 
         // Định dạng thời gian theo phút và giây
-        private string FormatTime(TimeSpan time)
+        private string FormatTime(int seconds)
         {
-            return time.ToString(@"mm\:ss");
+            int minutes = seconds / 60;
+            int remainingSeconds = seconds % 60;
+            return $"{minutes:D2}:{remainingSeconds:D2}";
         }
-
-        // Hàm xử lý sự kiện TimeUpdated
-        private void ChessTimer_TimeUpdated(int playerNumber, TimeSpan remainingTime)
-        {
-            string timeString = FormatTime(remainingTime);
-
-            if (playerNumber == 1)
-            {
-                UpdateTimerDisplay(WhiteTimerPosition.left, WhiteTimerPosition.top, timeString);
-            }
-            else
-            {
-                UpdateTimerDisplay(BlackTimerPosition.left, BlackTimerPosition.top, timeString);
-            }
-        }
-
-        // Hàm cập nhật hiển thị thời gian
-        private void UpdateTimerDisplay(int left, int top, string timeString)
-        {
-            lock (ConsoleLock)
-            {
-                Console.SetCursorPosition(left, top);
-                Console.Write(timeString + "  "); // Xóa các ký tự dư thừa
-            }
-        }
-
-        // Hàm xử lý sự kiện TimeExpired
-        private void ChessTimer_TimeExpired(int playerNumber)
-        {
-            lock (ConsoleLock)
-            {
-                Console.SetCursorPosition(0, Console.CursorTop + 2);
-                Console.WriteLine($"\nThời gian của {(playerNumber == 1 ? "Vương quốc" : "Rừng sâu")} đã hết!");
-                Console.WriteLine("Nhấn phím bất kỳ để thoát...");
-            }
-
-            // Dừng chương trình hoặc thực hiện hành động kết thúc trò chơi
-            Console.ReadKey();
-            Environment.Exit(0);
-        }
-
-        // Bắt đầu đồng hồ cho người chơi hiện tại
-        private void StartTimerForCurrentPlayer(PieceColor currentPlayerColor)
-        {
-            int playerNumber = currentPlayerColor == PieceColor.White ? 1 : 2;
-            chessTimer.StartTimer(playerNumber);
-        }
-
-        // Gọi hàm này khi người chơi hoàn thành lượt đi
-        public void OnPlayerMoveCompleted(PieceColor currentPlayerColor)
-        {
-            // Chuyển sang người chơi tiếp theo
-            PieceColor nextPlayerColor = currentPlayerColor == PieceColor.White ? PieceColor.Black : PieceColor.White;
-            StartTimerForCurrentPlayer(nextPlayerColor);
-        }
-
-        public void StopTimer()
-        {
-            chessTimer.StopTimer();
-        }
+    }
 }
