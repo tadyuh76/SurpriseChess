@@ -92,6 +92,6 @@ public class CampaignController : IController
             GameMode.PlayerVsBot,
             node.Difficulty
         );
-        chessController.Run();
+        ScreenManager.Instance.NavigateToScreen(chessController);
     }
 }

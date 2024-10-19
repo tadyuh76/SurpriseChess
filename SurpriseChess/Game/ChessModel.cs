@@ -65,7 +65,7 @@ public class ChessModel
         effectApplier.ApplyEffects(destination);
 
         Result = arbiter.GetGameResult(GameState.CurrentPlayerColor);
-        Deselect()
+        Deselect();
 
         // Kiểm tra nếu máy có thể thực hiện nước cờ tiếp theo
         if (Result == GameResult.InProgress && IsBotsTurn)

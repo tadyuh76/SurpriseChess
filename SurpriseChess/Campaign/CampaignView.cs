@@ -114,7 +114,7 @@ public class CampaignView
             message = "🚎 Bắt đầu bàn cờ tại UEH - Cơ sở 144 Phạm Đức Sơn, P.16 - Q.8 🚎";
             guide = "Nhấn Enter để tiếp tục";
             asciiArt = @"
-     /\
+      /\
      /\/\
     /\/\/\
    /\/\/\/\
@@ -137,7 +137,7 @@ public class CampaignView
             message = $"🚎 Bắt đầu bàn cờ tại UEH - Cơ sở {node.Id} 🚎";
             guide = "Nhấn Enter để tiếp tục";
             asciiArt = @"
-                                         /\
+                                                   /\
                                                ||______||
                                                || ^  ^ ||
                                                \| |  | |/

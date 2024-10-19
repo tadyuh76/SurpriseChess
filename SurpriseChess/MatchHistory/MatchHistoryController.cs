@@ -22,7 +22,7 @@ public class MatchHistoryController : IController
             if (selectedMatch != null)
             {
                 ChessController chessController = new ChessController(
-                    new ChessModel(new Chess960(), new StockFish()),
+                    new ChessModel(new Chess960(), new StockFish(depth: 10)),
                     new ChessView(),
                     GameMode.PlayerVsPlayer,
                     null

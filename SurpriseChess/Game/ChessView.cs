@@ -1,5 +1,4 @@
-﻿namespace SurpriseChess
-{
+﻿namespace SurpriseChess;
     internal class ChessView
     {
         static string[] columnLabels = { "a", "b", "c", "d", "e", "f", "g", "h" };
@@ -62,7 +61,7 @@
             }
             Console.WriteLine();
         }
-    }
+    
         // Phương thức để vẽ một ô cờ cụ thể
         private void DrawSquare(Board board, Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
         {
@@ -208,37 +207,4 @@
             int remainingSeconds = seconds % 60;
             return $"{minutes:D2}:{remainingSeconds:D2}";
         }
-    }
-
-    // Hiển thị quân cờ bị bắt và đồng hồ cho Đen ở trên
-    private void DisplayBlackCapturedAndTimer()
-    {
-
-        Console.WriteLine($"Rừng sâu đã bắt: {GetCapturedPieces(PieceColor.White)}");
-        Console.WriteLine($"Thời gian còn lại của Rừng sâu: {FormatTime(blackTimeRemaining)}");
-        Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
-    }
-
-    // Hiển thị quân cờ bị bắt và đồng hồ cho Trắng ở dưới
-    private void DisplayWhiteCapturedAndTimer()
-    {
-
-        Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
-        Console.WriteLine($"Vương quốc đã bắt: {GetCapturedPieces(PieceColor.Black)}");
-        Console.WriteLine($"Thời gian còn lại của Vương quốc: {FormatTime(whiteTimeRemaining)}");
-    }
-
-    // Lấy danh sách quân cờ bị bắt cho mỗi bên
-    private string GetCapturedPieces(PieceColor color)
-    {
-        return string.Join(", ", capturedPieces[color].Select(p => p.DisplaySymbol));
-    }
-
-    // Định dạng thời gian theo phút và giây
-    private string FormatTime(int seconds)
-    {
-        int minutes = seconds / 60;
-        int remainingSeconds = seconds % 60;
-        return $"{minutes:D2}:{remainingSeconds:D2}";
-    }
 }

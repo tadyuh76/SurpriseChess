@@ -27,19 +27,4 @@ public class CampaignModel
 
         return nodes;
     }
-
-    public void MoveUp()
-    {
-        if (CurrentNodeIndex > 0) CurrentNodeIndex--;
-    }
-
-    public void MoveDown()
-    {
-        if (CurrentNodeIndex < Nodes.Count - 1) CurrentNodeIndex++;
-    }
-
-    public CampaignNode GetCurrentNode()
-    {
-        return Nodes[CurrentNodeIndex];
-    }
 }
