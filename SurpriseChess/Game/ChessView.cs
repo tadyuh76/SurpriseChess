@@ -9,8 +9,6 @@
         private static int whiteTimeRemaining = 900; // 15 phút cho Trắng
         private static int blackTimeRemaining = 900; // 15 phút cho Đen
 
-
-
         // Phương thức hiển thị toàn bộ bàn cờ, bao gồm các quân cờ và các ô được đánh dấu
         public void Render(Board board, Position? selectedPosition, HashSet<Position> highlightedMoves, PieceColor currentPlayerColor, int cursorX, int cursorY)
         {
@@ -64,13 +62,12 @@
             }
             Console.WriteLine();
         }
-
+    }
         // Phương thức để vẽ một ô cờ cụ thể
         private void DrawSquare(Board board, Position position, Position? selectedPosition, HashSet<Position> highlightedMoves, int cursorX, int cursorY)
         {
             // Thiết lập màu nền cho ô cờ dựa trên trạng thái của nó
             SetSquareBackgroundColor(board, position, selectedPosition, highlightedMoves, cursorX, cursorY);
-
 
             Piece? piece = board.GetPieceAt(position);
             //Nếu quân cờ không phải là khoảng trống và hiệu ứng toàn hình được áp dụng
@@ -83,7 +80,6 @@
                 // Hiển thị quân cờ hoặc khoảng trống nếu không có quân cờ
                 Console.Write($" {piece?.DisplaySymbol ?? "  "} ");
             }
-
         }
 
         // Phương thức hỗ trợ để thiết lập màu nền của ô cờ
@@ -180,7 +176,7 @@
                 Console.WriteLine($"{pieceDescription.Value}: {pieceDescription.Key} ");
             }
         }
-
+   
         // Hiển thị quân cờ bị bắt và đồng hồ cho Đen ở trên
         private void DisplayBlackCapturedAndTimer(Board board)
         {
@@ -212,5 +208,37 @@
             int remainingSeconds = seconds % 60;
             return $"{minutes:D2}:{remainingSeconds:D2}";
         }
+    }
+
+    // Hiển thị quân cờ bị bắt và đồng hồ cho Đen ở trên
+    private void DisplayBlackCapturedAndTimer()
+    {
+
+        Console.WriteLine($"Rừng sâu đã bắt: {GetCapturedPieces(PieceColor.White)}");
+        Console.WriteLine($"Thời gian còn lại của Rừng sâu: {FormatTime(blackTimeRemaining)}");
+        Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
+    }
+
+    // Hiển thị quân cờ bị bắt và đồng hồ cho Trắng ở dưới
+    private void DisplayWhiteCapturedAndTimer()
+    {
+
+        Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
+        Console.WriteLine($"Vương quốc đã bắt: {GetCapturedPieces(PieceColor.Black)}");
+        Console.WriteLine($"Thời gian còn lại của Vương quốc: {FormatTime(whiteTimeRemaining)}");
+    }
+
+    // Lấy danh sách quân cờ bị bắt cho mỗi bên
+    private string GetCapturedPieces(PieceColor color)
+    {
+        return string.Join(", ", capturedPieces[color].Select(p => p.DisplaySymbol));
+    }
+
+    // Định dạng thời gian theo phút và giây
+    private string FormatTime(int seconds)
+    {
+        int minutes = seconds / 60;
+        int remainingSeconds = seconds % 60;
+        return $"{minutes:D2}:{remainingSeconds:D2}";
     }
 }
