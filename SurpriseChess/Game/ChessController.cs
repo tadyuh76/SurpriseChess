@@ -60,6 +60,7 @@ internal class ChessController : IController
 
         // Loại bỏ các chuỗi FEN trùng lặp 
         List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match.HistoryFEN);
+        match.HistoryFEN = processedHistory;
 
         MatchHistoryManager.SaveMatch(match); // Xuất trận đấu ra file bằng cách sử dụng MatchHistoryManager
         

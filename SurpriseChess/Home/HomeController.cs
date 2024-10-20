@@ -69,6 +69,9 @@ public class HomeController : IController
                 ScreenManager.Instance.NavigateToScreen(new CampaignController(
                     new CampaignModel(),
                     new CampaignView()
+
+                //NodeView(),
+                //CampaignModel()
                 ));
                 break;
             case 2:

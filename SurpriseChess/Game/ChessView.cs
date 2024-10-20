@@ -109,10 +109,12 @@ namespace SurpriseChess
 
             if (isCursor)
             {
+                // Ô đang chọn
                 Console.BackgroundColor = ConsoleColor.DarkGreen;
             }
             else if (isHighlighted)
             {
+                // Các ô có thể di chuyển
                 Console.BackgroundColor = ConsoleColor.Yellow;
             }
             else if (isParalyzed)
@@ -127,14 +129,17 @@ namespace SurpriseChess
             }
             else if (isSelected)
             {
+                // Ô được chọn để di chuyển
                 Console.BackgroundColor = ConsoleColor.Red;
             }
             else if ((position.Row + position.Col) % 2 == 0)
             {
+                // Ô sáng của bàn cờ
                 Console.BackgroundColor = ConsoleColor.Gray;
             }
             else
             {
+                // Ô tối của bàn cờ
                 Console.BackgroundColor = ConsoleColor.DarkGray;
             }
         }
@@ -191,7 +196,11 @@ namespace SurpriseChess
         private void DisplayBlackCapturedAndTimer(Board board)
         {
             Console.Write($"Rừng sâu đã bắt: {GetCapturedPieces(board, PieceColor.Black)}"); //hiển thị các quân bị bắt
-            Console.WriteLine($" ({board.GetPlayerScore(PieceColor.Black)}đ)"); //hiển thị điểm
+            
+            int blackScore = board.GetPlayerScore(PieceColor.Black);
+            if (blackScore > 0) Console.WriteLine($"  ({blackScore})"); //hiển thị điểm
+            else Console.WriteLine();
+
             Console.WriteLine($"Thời gian còn lại của Rừng sâu: {FormatTime(blackTimeRemaining)}");  //hiển thị thời gian còn lại       
             Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
         }
@@ -201,14 +210,18 @@ namespace SurpriseChess
         {
             Console.WriteLine(); // Dòng trống để cách biệt với bàn cờ
             Console.Write($"Vương quốc đã bắt: {GetCapturedPieces(board, PieceColor.White)}"); //hiển thị các quân bị bắt
-            Console.WriteLine($" ({board.GetPlayerScore(PieceColor.White)}đ)"); //hiển thị điểm
+            
+            int whiteScore = board.GetPlayerScore(PieceColor.White);
+            if (whiteScore > 0) Console.WriteLine($"  ({whiteScore})"); //hiển thị điểm
+            else Console.WriteLine();
+
             Console.WriteLine($"Thời gian còn lại của Vương quốc: {FormatTime(whiteTimeRemaining)}"); //hiển thị thời gian còn lại
         }
 
         // Lấy danh sách quân cờ bị bắt cho mỗi bên từ Board
         private string GetCapturedPieces(Board board, PieceColor color)
         {
-            return string.Join(", ", board.GetCapturedPieces(color).Select(p => p.DisplaySymbol)); //in ra các biểu tượng quân bị bắt
+            return string.Join(" ", board.GetCapturedPieces(color).Select(p => p.DisplaySymbol)); //in ra các biểu tượng quân bị bắt
         }
 
         // Định dạng thời gian theo phút và giây
