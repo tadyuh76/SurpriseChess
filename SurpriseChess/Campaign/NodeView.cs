@@ -53,8 +53,7 @@ namespace SurpriseChess
 
         private List<string> GetASCIIArt(int difficulty)
         {
-            var instance = new CampaignASCIIArt();
-            return instance.NodeArt[difficulty - 1];
+            return CampaignASCIIArt.Instance.NodeArt[difficulty - 1];
         }
 
         private void DrawASCIIART(List<string> lines)
