@@ -8,8 +8,8 @@ public class ChessModel
     private readonly IBoardSetup boardSetup;
 
     private readonly IChessBot chessBot;
-    private Arbiter arbiter = null!;
-    private EffectApplier effectApplier = null!;
+    private Arbiter Arbiter = null!;
+    private EffectApplier EffectApplier = null!;
  
     private readonly Random random = new();
 
@@ -21,6 +21,7 @@ public class ChessModel
 
     public Position? SelectedPosition { get; private set; }
     public HashSet<Position> HighlightedMoves { get; private set; } = null!;
+    public ChessTimer ChessTimer { get; private set; } = null!;
 
     public ChessModel(IBoardSetup boardSetup, IChessBot chessBot)
     {
@@ -34,19 +35,18 @@ public class ChessModel
         GameMode = gameMode;
         GameState = new(Board);
         Result = GameResult.InProgress;
-        arbiter = new Arbiter(Board, GameState);
-        effectApplier = new EffectApplier(Board);
+        Arbiter = new Arbiter(Board, GameState);
+        EffectApplier = new EffectApplier(Board);
         SelectedPosition = null;
         HighlightedMoves = new HashSet<Position>();
-        effectApplier = new EffectApplier(Board);
-
+        ChessTimer = new ChessTimer(TimeSpan.FromMinutes(15)); // 15 minutes for each player
     }
 
     public void Select(Position position)
     {
         SelectedPosition = position;
         Debug.Print($"Selecting {FEN.PositionToFEN(position)}");
-        HighlightedMoves = arbiter.GetLegalMoves(position);
+        HighlightedMoves = Arbiter.GetLegalMoves(position);
     }
 
     public void Deselect()
@@ -63,11 +63,13 @@ public class ChessModel
         Board.MakeMove(SelectedPosition, destination);
         Debug.Print($"Moved to {FEN.PositionToFEN(destination)}");
 
-        effectApplier.ClearEffects();
-        effectApplier.ApplyEffects(destination);
+        EffectApplier.ClearEffects();
+        EffectApplier.ApplyEffects(destination);
 
-        Result = arbiter.GetGameResult(GameState.CurrentPlayerColor);
+        Result = Arbiter.GetGameResult(GameState.CurrentPlayerColor);
         Deselect();
+
+        ChessTimer.UpdateTurn();
 
         // Check if the bot needs to make a move
         if (Result == GameResult.InProgress && IsBotsTurn)
@@ -104,13 +106,13 @@ public class ChessModel
         // The bot doesn't know the special effects (paralysis and shield),
         // so check if the bot's move is legal before making it
         Debug.Print($"legal moves at stockfish 1st move ({FEN.PositionToFEN(bestMoves[0].Item1)} {FEN.PositionToFEN(bestMoves[0].Item2)})");
-        foreach(var move in arbiter.GetLegalMoves(bestMoves[0].Item1))
+        foreach(var move in Arbiter.GetLegalMoves(bestMoves[0].Item1))
         {
             Debug.Print(FEN.PositionToFEN(move));
         }
         foreach ((Position source, Position destination) in bestMoves)
         {
-            if (arbiter.GetLegalMoves(source).Contains(destination))
+            if (Arbiter.GetLegalMoves(source).Contains(destination))
             {
                 return (source, destination);
             }
@@ -125,7 +127,7 @@ public class ChessModel
         List<(Position, Position)> legalMoves = new();
         foreach ((Position source, Piece _) in Board.LocatePieces(GameState.CurrentPlayerColor))
         {
-            foreach (Position destination in arbiter.GetLegalMoves(source))
+            foreach (Position destination in Arbiter.GetLegalMoves(source))
             {
                 legalMoves.Add((source, destination));
             }

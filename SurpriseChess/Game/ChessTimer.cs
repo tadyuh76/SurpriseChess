@@ -1,87 +1,85 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Timers;
+using Timer = System.Timers.Timer;
 
-namespace SurpriseChess.Game
+public class ChessTimer
 {
-    public class ChessTimer
+    private readonly Timer _whiteTimer;
+    private readonly Timer _blackTimer;
+    private TimeSpan _whiteTime;
+    private TimeSpan _blackTime;
+    private bool _isWhiteTurn;
+
+    public ChessTimer(TimeSpan initialTime)
     {
-        private TimeSpan whiteTime;
-        private TimeSpan blackTime;
-        private CancellationTokenSource cancellationTokenSource;
-        private int currentPlayer; // 1: White, 2: Black
+        _whiteTime = initialTime;
+        _blackTime = initialTime;
+        _isWhiteTurn = true; // Start with White's turn
 
-        public event Action<int> TimeExpired; // Sự kiện khi thời gian hết
-        public event Action<int, TimeSpan> TimeUpdated; // Sự kiện khi thời gian cập nhật
+        _whiteTimer = new Timer(1000); // 1 second intervals
+        _whiteTimer.Elapsed += (sender, e) => UpdateTimer(ref _whiteTime);
 
-        public ChessTimer(TimeSpan initialTime)
+        _blackTimer = new Timer(1000);
+        _blackTimer.Elapsed += (sender, e) => UpdateTimer(ref _blackTime);
+    }
+
+
+    // Starts the timer for the current player
+    public void Start()
+    {
+        if (_isWhiteTurn)
+            _whiteTimer.Start();
+        else
+            _blackTimer.Start();
+    }
+
+    // Stops the timer for the current player
+    public void Stop()
+    {
+        _whiteTimer.Stop();
+        _blackTimer.Stop();
+    }
+
+    // Switches the turn to the other player
+    public void UpdateTurn()
+    {
+        Stop(); // Stop the current player's timer
+
+        _isWhiteTurn = !_isWhiteTurn; // Switch turn
+
+        Start(); // Start the timer for the next player
+    }
+
+    // Gets the remaining time for the current player
+    public TimeSpan GetRemainingTime()
+    {
+        return _isWhiteTurn ? _whiteTime : _blackTime;
+    }
+
+    // Updates the timer
+    private void UpdateTimer(ref TimeSpan time)
+    {
+        if (time.TotalSeconds > 0)
         {
-            whiteTime = initialTime;
-            blackTime = initialTime;
-            currentPlayer = 1;
+            time = time.Subtract(TimeSpan.FromSeconds(1)); // Decrement by 1 second
         }
-
-        public void StartTimer(int player)
+        else
         {
-            StopTimer(); // Dừng bất kỳ timer nào đang chạy
-
-            cancellationTokenSource = new CancellationTokenSource();
-            currentPlayer = player;
-            StartTimerInternal(player, cancellationTokenSource.Token);
+            Stop(); // Stop the timer if time is up
+            Console.WriteLine($"{(_isWhiteTurn ? "White" : "Black")} time is up!");
         }
+    }
 
-        private async void StartTimerInternal(int player, CancellationToken cancellationToken)
-        {
-            try
-            {
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    await Task.Delay(1000, cancellationToken); // Chờ 1 giây
+    // Debugging output for remaining time
+    public void PrintRemainingTime()
+    {
+        string blackTimerText = "Thời gian còn lại của Rừng sâu: ";
+        string whiteTimerText = "Thời gian còn lại của Vương quốc: ";
 
-                    if (player == 1)
-                    {
-                        whiteTime = whiteTime.Subtract(TimeSpan.FromSeconds(1));
-                        TimeUpdated?.Invoke(1, whiteTime);
+        Console.SetCursorPosition(blackTimerText.Length, 1);
+        Console.WriteLine(_blackTime);
+        
+        Console.SetCursorPosition(whiteTimerText.Length, 14);
+        Console.WriteLine(_whiteTime);
 
-                        if (whiteTime <= TimeSpan.Zero)
-                        {
-                            TimeExpired?.Invoke(1);
-                            StopTimer();
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        blackTime = blackTime.Subtract(TimeSpan.FromSeconds(1));
-                        TimeUpdated?.Invoke(2, blackTime);
-
-                        if (blackTime <= TimeSpan.Zero)
-                        {
-                            TimeExpired?.Invoke(2);
-                            StopTimer();
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (TaskCanceledException)
-            {
-                // Bỏ qua ngoại lệ hủy bỏ
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Lỗi trong StartTimerInternal: {ex.Message}");
-            }
-        }
-
-        public void StopTimer()
-        {
-            cancellationTokenSource?.Cancel();
-        }
-
-        public TimeSpan GetWhiteTime() => whiteTime;
-        public TimeSpan GetBlackTime() => blackTime;
-
-        public int GetCurrentPlayer() => currentPlayer;
     }
 }

@@ -1,4 +1,5 @@
-using System.Diagnostics;
+
+using Timer = System.Timers.Timer;
 
 namespace SurpriseChess;
 
@@ -11,6 +12,8 @@ internal class ChessController : IController
     private GameMode gameMode = GameMode.PlayerVsPlayer;
     private int? difficultyLevel;
     private Match? match;
+
+    private static Timer _timer; // Dùng để rerender đồng hồ mỗi giấy hoặc mỗi khi có update
 
     public ChessController(ChessModel model, ChessView view, GameMode gameMode, int? difficultyLevel = null)
     {
@@ -26,23 +29,27 @@ internal class ChessController : IController
             Result = "InProgress" 
         };
         // Khởi tạo listener cho model mỗi khi có update từ board
-        this.model.BoardUpdated += OnBoardUpdated;
+        this.model.BoardUpdated += Rerender;
     }
 
     // Hàm được tạo ra để rerender view mỗi khi bot thực hiện nước đi
-    private void OnBoardUpdated()
+    private void Rerender()
     {
-        view.Render(model, cursorX, cursorY); 
+        view.Render(model, cursorX, cursorY);
+        model.ChessTimer.PrintRemainingTime();
     }
 
     // Chạy trò chơi
     public void Run()
     {
         model.NewGame(gameMode); // Bắt đầu trò chơi mới
+        model.ChessTimer.Start();
+
+        StartTimerInterval();
 
         while (model.Result == GameResult.InProgress) // Khi trò chơi đang diễn ra
         {
-            view.Render(model, cursorX, cursorY);
+            Rerender();
 
             // Ghi lại FEN của trạng thái bàn cờ hiện tại
             string currentFEN = FEN.GetFEN(model.Board, model.GameState);
@@ -70,7 +77,21 @@ internal class ChessController : IController
                 model.Result
             )    
         );
+    }
 
+
+    private void StartTimerInterval()
+    {
+        // Create a timer that triggers every 1 second (1000 milliseconds)
+        _timer = new Timer(1000);
+        _timer.Elapsed += OnTimeInterval; // Attach the event handler
+        _timer.AutoReset = true; // Restart the timer automatically
+        _timer.Enabled = true; // Start the timer
+    }
+
+    private void OnTimeInterval(Object source, System.Timers.ElapsedEventArgs e)
+    {
+        model.ChessTimer.PrintRemainingTime();
     }
 
     // Lắng nghe các phím bấm
