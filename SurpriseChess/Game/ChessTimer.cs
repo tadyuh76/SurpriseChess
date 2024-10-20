@@ -39,6 +39,13 @@ public class ChessTimer
         _blackTimer.Stop();
     }
 
+    public void Dispose()
+    {
+        Stop();
+        _whiteTimer.Dispose();
+        _blackTimer.Dispose();
+    }
+
     // Switches the turn to the other player
     public void UpdateTurn()
     {
@@ -80,6 +87,5 @@ public class ChessTimer
         
         Console.SetCursorPosition(whiteTimerText.Length, 14);
         Console.WriteLine(_whiteTime);
-
     }
 }

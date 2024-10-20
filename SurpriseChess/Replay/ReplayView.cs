@@ -5,87 +5,91 @@ namespace SurpriseChess
 {
     public class ReplayView
     {
-        static string[] columnLabels = { "a", "b", "c", "d", "e", "f", "g", "h" };
-        static string[] rowLabels = { "8", "7", "6", "5", "4", "3", "2", "1" };
-        private string actualMove;
-        private string bestMove;
+        static string[] columnLabels = { "a", "b", "c", "d", "e", "f", "g", "h" }; // Nhãn cột cho bàn cờ
+        static string[] rowLabels = { "8", "7", "6", "5", "4", "3", "2", "1" }; // Nhãn hàng cho bàn cờ
+        private string actualMove; // Nước đi thực tế
+        private string bestMove; // Nước đi tốt nhất
 
+        // Phương thức hiển thị bàn cờ
         public void RenderBoard(ReplayBoard board, string actualMove, string bestMove)
         {
-            Console.Clear();
-            this.actualMove = actualMove;
-            this.bestMove = bestMove;
+            Console.Clear(); // Xóa màn hình
+            this.actualMove = actualMove; // Gán nước đi thực tế
+            this.bestMove = bestMove; // Gán nước đi tốt nhất
 
-            //vẽ bàn cờ
+            // Vẽ bàn cờ
             DrawBoardReplay(board);
 
-            //// Hiển thị tên cột dưới bàn cờ
+            // Hiển thị tên cột dưới bàn cờ
             DisplayColumnLabels();
 
-            // In ra miêu tả từng quân cở
+            // In ra mô tả từng quân cờ
             PrintDescription();
-            
-            //In ra bảng điều khiển
-            DisplayNavigationOptions();
 
+            // In ra bảng điều khiển
+            DisplayNavigationOptions();
         }
 
-
+        // Vẽ bàn cờ trong chế độ replay
         private void DrawBoardReplay(ReplayBoard board)
         {
-            // Render bảng
+            // Render bảng cờ
             for (int row = 0; row < 8; row++)
             {
-                Console.Write($" {rowLabels[row]} ");
+                Console.Write($" {rowLabels[row]} "); // In nhãn hàng
                 for (int col = 0; col < 8; col++)
                 {
-                    Position currentPosition = new Position(row, col);
-                    DrawSquareReplay(board, currentPosition);
+                    Position currentPosition = new Position(row, col); // Tạo vị trí hiện tại
+                    DrawSquareReplay(board, currentPosition); // Vẽ ô hiện tại
                 }
-                Console.ResetColor();
+                Console.ResetColor(); // Đặt lại màu sắc
                 Console.WriteLine();
             }
         }
 
+        // Vẽ ô cụ thể trong chế độ replay
         private void DrawSquareReplay(ReplayBoard board, Position position)
         {
-            string squareNotation = $"{(char)('a' + position.Col)}{8 - position.Row}";
-            ConsoleColor backgroundColor = GetSquareBackgroundColor(position, squareNotation);
-            ConsoleColor foregroundColor = ConsoleColor.Black;
+            string squareNotation = $"{(char)('a' + position.Col)}{8 - position.Row}"; // Tính toán ký hiệu ô
+            ConsoleColor backgroundColor = GetSquareBackgroundColor(position, squareNotation); // Lấy màu nền
+            ConsoleColor foregroundColor = ConsoleColor.Black; // Màu chữ
 
-            Console.BackgroundColor = backgroundColor;
-            Console.ForegroundColor = foregroundColor;
+            Console.BackgroundColor = backgroundColor; // Gán màu nền
+            Console.ForegroundColor = foregroundColor; // Gán màu chữ
 
-            Piece? piece = board.GetPieceAt(position);
-            string pieceSymbol = piece?.DisplaySymbol ?? "  ";
+            Piece? piece = board.GetPieceAt(position); // Lấy quân cờ tại vị trí
+            string pieceSymbol = piece?.DisplaySymbol ?? "  "; // Lấy ký hiệu quân cờ hoặc khoảng trắng
 
-            // Adjust foreground color for better visibility if needed
+            // Điều chỉnh màu chữ để dễ nhìn hơn nếu cần
             if (backgroundColor == ConsoleColor.DarkGreen || backgroundColor == ConsoleColor.DarkYellow)
             {
-                Console.ForegroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.White; // Đặt màu chữ là trắng
             }
 
-            Console.Write($" {pieceSymbol} ");
-            Console.ResetColor();
+            Console.Write($" {pieceSymbol} "); // In quân cờ
+            Console.ResetColor(); // Đặt lại màu sắc
         }
 
+        // Kiểm tra xem ô có nằm trong nước đi hay không
         private bool IsPartOfMove(string squareNotation, string move)
         {
-            return move.Contains(squareNotation);
+            return move.Contains(squareNotation); // Trả về true nếu ô nằm trong nước đi
         }
 
+        // Lấy màu nền cho ô dựa trên vị trí và nước đi
         private ConsoleColor GetSquareBackgroundColor(Position position, string squareNotation)
         {
-            if (IsPartOfMove(squareNotation, actualMove))
+            if (IsPartOfMove(squareNotation, actualMove)) // Nếu ô thuộc nước đi thực tế
             {
-                return ConsoleColor.DarkGreen;
+                return ConsoleColor.DarkGreen; // Màu nền xanh đậm
             }
-            else if (IsPartOfMove(squareNotation, bestMove))
+            else if (IsPartOfMove(squareNotation, bestMove)) // Nếu ô thuộc nước đi tốt nhất
             {
-                return ConsoleColor.DarkYellow;
+                return ConsoleColor.DarkYellow; // Màu nền vàng đậm
             }
             else
             {
+                // Màu nền ô cờ
                 return (position.Row + position.Col) % 2 == 0 ? ConsoleColor.Gray : ConsoleColor.DarkGray;
             }
         }
@@ -93,87 +97,94 @@ namespace SurpriseChess
         // Hiển thị tên cột dưới bàn cờ
         static void DisplayColumnLabels()
         {
-            Console.Write("    ");
+            Console.Write("    "); // Khoảng cách trước nhãn cột
             foreach (string label in columnLabels)
             {
-                Console.Write($"{label}   ");
+                Console.Write($"{label}   "); // In nhãn cột
             }
-            Console.WriteLine();
+            Console.WriteLine(); // Xuống dòng
         }
 
+        // In mô tả từng loại quân cờ với biểu tượng và tên tương ứng
         private void PrintDescription()
         {
-            int currentLine = 0;
-            PrintPieceDescription("Vương quốc", ChessUtils.WhitePieceEmojis, currentLine);
-            PrintPieceDescription("Rừng sâu", ChessUtils.BlackPieceEmojis, currentLine);
-            PrintSpecialSquareDescription(ref currentLine);
+            int currentLine = 0; // Dòng hiện tại
+            PrintPieceDescription("Vương quốc", ChessUtils.WhitePieceEmojis, currentLine); // Mô tả quân cờ trắng
+            PrintPieceDescription("Rừng sâu", ChessUtils.BlackPieceEmojis, currentLine); // Mô tả quân cờ đen
+            PrintSpecialSquareDescription(ref currentLine); // Mô tả ô đặc biệt
         }
+
+        // In mô tả ô đặc biệt
         private void PrintSpecialSquareDescription(ref int currentLine)
         {
             int offset = 77; // Điều chỉnh vị trí in trên màn hình
 
-            Console.SetCursorPosition(offset, currentLine++);
+            Console.SetCursorPosition(offset, currentLine++); // Đặt con trỏ tại vị trí in
             Console.WriteLine("Ô đặc biệt:");
 
             Console.SetCursorPosition(offset, currentLine++);
-            Console.BackgroundColor = ConsoleColor.Cyan;
+            Console.BackgroundColor = ConsoleColor.Cyan; // Đặt màu nền cho ô được bảo vệ
             Console.Write("   "); // In một khối màu để mô tả ô được bảo vệ
             Console.ResetColor();
             Console.WriteLine(": Ô được bảo vệ");
 
             Console.SetCursorPosition(offset, currentLine++);
-            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.BackgroundColor = ConsoleColor.DarkMagenta; // Đặt màu nền cho ô bị trói
             Console.Write("   "); // In một khối màu để mô tả ô bị trói
             Console.ResetColor();
             Console.WriteLine(": Ô bị trói");
         }
-        // In mô tả từng loại quân cờ với biểu tượng và tên tương ứng
+
+        // In mô tả từng loại quân cờ
         private void PrintPieceDescription(string pieceName, Dictionary<string, string> emojisDict, int currentLine)
         {
-            int offset = pieceName == "Vương quốc" ? 40 : 60;
-            Console.SetCursorPosition(offset, currentLine++);
-            Console.WriteLine($"{pieceName}: ");
+            int offset = pieceName == "Vương quốc" ? 40 : 60; // Xác định vị trí in
+            Console.SetCursorPosition(offset, currentLine++); // Đặt con trỏ tại vị trí in
+            Console.WriteLine($"{pieceName}: "); // In tên quân cờ
             foreach (var pieceDescription in emojisDict)
             {
-                Console.SetCursorPosition(offset, currentLine++);
-                Console.WriteLine($"{pieceDescription.Value}: {pieceDescription.Key} ");
+                Console.SetCursorPosition(offset, currentLine++); // Đặt con trỏ tại vị trí in
+                Console.WriteLine($"{pieceDescription.Value}: {pieceDescription.Key} "); // In biểu tượng và tên quân cờ
             }
         }
 
+        // In các tùy chọn điều hướng
         public void DisplayNavigationOptions()
         {
-            Console.SetCursorPosition(0, 10);
+            Console.SetCursorPosition(0, 10); // Đặt vị trí con trỏ
             Console.WriteLine("\nĐiều khiển:");
-            Console.WriteLine("Mũi tên phải (→) - Nước đi tiếp theo");
-            Console.WriteLine("Mũi tên trái (←) - Nước đi trước");
-            Console.WriteLine("Backspace - Thoát replay");
+            Console.WriteLine("Mũi tên phải (→) - Nước đi tiếp theo"); // Chỉ dẫn điều khiển
+            Console.WriteLine("Mũi tên trái (←) - Nước đi trước"); // Chỉ dẫn điều khiển
+            Console.WriteLine("Backspace - Thoát replay"); // Chỉ dẫn điều khiển
         }
 
+        // Lấy thông tin đầu vào từ người dùng
         public ConsoleKeyInfo GetUserInput()
         {
-            return Console.ReadKey(true);
+            return Console.ReadKey(true); // Đọc phím bấm mà không hiển thị
         }
 
+        // Hiển thị thông tin nước đi
         public void DisplayMoveInfo(string actualNextMove, string bestNextMove)
         {
-            Console.SetCursorPosition(0, 16);
+            Console.SetCursorPosition(0, 16); // Đặt vị trí con trỏ
             Console.Write("Bước đi thực tế tiếp theo: ");
-            Console.BackgroundColor = ConsoleColor.DarkGreen;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(actualNextMove);
-            Console.ResetColor();
+            Console.BackgroundColor = ConsoleColor.DarkGreen; // Màu nền cho nước đi thực tế
+            Console.ForegroundColor = ConsoleColor.White; // Màu chữ cho nước đi thực tế
+            Console.WriteLine(actualNextMove); // In nước đi thực tế
+            Console.ResetColor(); // Đặt lại màu sắc
 
             Console.Write("Bước đi tiếp theo tối ưu nhất (Stockfish): ");
-            Console.BackgroundColor = ConsoleColor.DarkYellow;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.WriteLine(bestNextMove);
-            Console.ResetColor();
+            Console.BackgroundColor = ConsoleColor.DarkYellow; // Màu nền cho nước đi tốt nhất
+            Console.ForegroundColor = ConsoleColor.Black; // Màu chữ cho nước đi tốt nhất
+            Console.WriteLine(bestNextMove); // In nước đi tốt nhất
+            Console.ResetColor(); // Đặt lại màu sắc
         }
 
-
+        // Hiển thị lỗi
         public void DisplayError(string message)
         {
-            Console.WriteLine($"Lỗi: {message}");
+            Console.WriteLine($"Lỗi: {message}"); // In thông báo lỗi
         }
     }
 }

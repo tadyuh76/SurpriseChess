@@ -1,34 +1,42 @@
-﻿
-namespace SurpriseChess;
-internal class NodeController : IController
+﻿namespace SurpriseChess
 {
-    private readonly NodeView view;
-    private readonly CampaignNode node;
-
-    public NodeController(NodeView view, CampaignNode node)
+    // Lớp NodeController chịu trách nhiệm điều khiển một node trong chế độ Campaign
+    internal class NodeController : IController
     {
-        this.view = view;
-        this.node = node;
-    }
+        private readonly NodeView view; // Giao diện hiển thị cho node
+        private readonly CampaignNode node; // Node mà controller này quản lý
 
-    public void Run()
-    {
-        view.Render(node);
-        Console.ReadKey();
-        StartSelectedCampaign();
-    }
+        // Constructor để khởi tạo NodeController với view và node cụ thể
+        public NodeController(NodeView view, CampaignNode node)
+        {
+            this.view = view;
+            this.node = node;
+        }
 
-    private void StartSelectedCampaign()
-    {
-        // Bắt đầu game ở Node được chọn
-        IChessBot chessBot = new StockFish(node.Difficulty);
-        ChessController chessController = new ChessController(
-            new ChessModel(new Chess960(), chessBot),
-            new ChessView(),
-            GameMode.PlayerVsBot,
-            node.Difficulty
-        );
-        ScreenManager.Instance.NavigateToScreen(chessController);
+        // Phương thức Run để hiển thị node và chờ người dùng nhấn phím
+        public void Run()
+        {
+            view.Render(node); // Hiển thị thông tin của node
+            Console.ReadKey(); // Đợi người dùng nhấn phím
+            StartSelectedCampaign(); // Bắt đầu bàn cờ được chọn
+        }
+
+        // Phương thức để bắt đầu trò chơi với node được chọn
+        private void StartSelectedCampaign()
+        {
+            // Tạo bot cờ mới với độ khó tương ứng của node
+            IChessBot chessBot = new StockFish(node.Difficulty);
+
+            // Tạo một ChessController mới cho trò chơi
+            ChessController chessController = new ChessController(
+                new ChessModel(new Chess960(), chessBot), // Khởi tạo mô hình cờ
+                new ChessView(), // Khởi tạo giao diện cờ
+                GameMode.PlayerVsBot, // Chế độ chơi người so với bot
+                node.Difficulty // Độ khó của bot
+            );
+
+            // Chuyển hướng tới màn hình cờ
+            ScreenManager.Instance.NavigateToScreen(chessController);
+        }
     }
 }
-

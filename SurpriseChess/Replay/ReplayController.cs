@@ -10,7 +10,6 @@ namespace SurpriseChess
         private readonly ReplayModel model;
         private readonly ReplayView view;
         private readonly StockFish stockfish;
-        private readonly StockfishAnalysisCache analysisCache;
         private readonly Stopwatch inputCooldown;
         private const int CooldownMilliseconds = 500; // Cooldown 500ms giữa các lần nhấn phím
 
@@ -19,7 +18,6 @@ namespace SurpriseChess
             this.model = model;
             this.view = view;
             this.stockfish = new StockFish(depth: 10);
-            this.analysisCache = new StockfishAnalysisCache();
             this.inputCooldown = new Stopwatch();
             this.inputCooldown.Start(); // Bắt đầu đo thời gian ngay khi khởi tạo
         }

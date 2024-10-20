@@ -6,15 +6,15 @@ namespace SurpriseChess;
 
 public class StockFish : IChessBot
 {
-    private static readonly HttpClient client = new() { Timeout = TimeSpan.FromSeconds(5) };
-    private const string ApiUrl = "https://tadyuh76.pythonanywhere.com/best_moves";
+    private static readonly HttpClient client = new() { Timeout = TimeSpan.FromSeconds(5) }; // HttpClient với timeout 5 giây
+    private const string ApiUrl = "https://tadyuh76.pythonanywhere.com/best_moves"; // Địa chỉ API để nhận nước đi
 
-    private const int numMoves = 1; 
-    private readonly int depth; // depth được lấy từ CampaignNode
+    private const int numMoves = 1; // Số lượng nước đi mà bot sẽ yêu cầu
+    private readonly int depth; // Độ sâu của tìm kiếm
 
     public StockFish(int depth)
     {
-        this.depth = depth; // Truyền số depth được khởi tạo
+        this.depth = depth; // Khởi tạo độ sâu
     }
 
     public async Task<List<(Position, Position)>> GetBestMoves(string fen)
@@ -22,93 +22,51 @@ public class StockFish : IChessBot
         // Tạo nội dung yêu cầu
         var requestBody = new
         {
-            fen,
-            options = new { UCI_Chess960 = true },
-            num_moves = numMoves, 
-            depth = depth  
+            fen, // Trạng thái bàn cờ ở định dạng FEN
+            options = new { UCI_Chess960 = true }, // Tùy chọn cho Chess960
+            num_moves = numMoves, // Số lượng nước đi muốn nhận
+            depth = depth // Độ sâu cho tìm kiếm
         };
 
+        // Chuyển đổi nội dung yêu cầu thành chuỗi JSON
         var jsonContent = new StringContent(
-            JsonSerializer.Serialize(requestBody),
+            JsonSerializer.Serialize(requestBody), // Chuyển đổi đối tượng thành JSON
             Encoding.UTF8,
-            "application/json"
+            "application/json" // Đặt loại nội dung là JSON
         );
 
         try
         {
-            // Gửi yêu cầu POST
+            // Gửi yêu cầu POST đến API
             HttpResponseMessage response = await client.PostAsync(ApiUrl, jsonContent);
 
             // Xử lý phản hồi
-            response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();
-            using JsonDocument doc = JsonDocument.Parse(responseBody);
+            response.EnsureSuccessStatusCode(); // Đảm bảo phản hồi thành công
+            string responseBody = await response.Content.ReadAsStringAsync(); // Đọc nội dung phản hồi
+            using JsonDocument doc = JsonDocument.Parse(responseBody); // Phân tích cú pháp JSON
             JsonElement root = doc.RootElement;
 
             // Lấy và in ra các nước đi tốt nhất
             List<(Position, Position)> bestMoves = new();
             foreach (JsonElement item in root.EnumerateArray())
             {
-                if (item.TryGetProperty("Move", out JsonElement moveElement))
+                if (item.TryGetProperty("Move", out JsonElement moveElement)) // Kiểm tra nếu có thuộc tính "Move"
                 {
-                    string move = moveElement.GetString()!;
+                    string move = moveElement.GetString()!; // Lấy giá trị của "Move"
 
-                    Position startPosition = FEN.FENToPosition(move[..2]);
-                    Position endPosition = FEN.FENToPosition(move[2..4]);
-                    Debug.Print($"stockfish best move is: {move}");
-                    bestMoves.Add((startPosition, endPosition));
+                    // Chuyển đổi chuỗi move thành vị trí bắt đầu và kết thúc
+                    Position startPosition = FEN.FENToPosition(move[..2]); // Lấy vị trí bắt đầu
+                    Position endPosition = FEN.FENToPosition(move[2..4]); // Lấy vị trí kết thúc
+                    Debug.Print($"stockfish best move is: {move}"); // In ra nước đi tốt nhất
+                    bestMoves.Add((startPosition, endPosition)); // Thêm vào danh sách
                 }
-               
             }
 
-            return bestMoves;
+            return bestMoves; // Trả về danh sách các nước đi tốt nhất
         }
         catch (Exception)
         {
-            return new List<(Position, Position)>();
+            return new List<(Position, Position)>(); // Trả về danh sách rỗng nếu có lỗi
         }
     }
 }
-
-public class StockfishAnalysisCache
-{
-    private readonly Dictionary<string, List<(Position, Position)>> cache = new();
-    private readonly int maxCacheSize;
-
-    public StockfishAnalysisCache(int maxCacheSize = 1000)
-    {
-        this.maxCacheSize = maxCacheSize;
-    }
-
-    public List<(Position, Position)> GetCachedAnalysis(string fen)
-    {
-        if (cache.TryGetValue(fen, out var analysis))
-        {
-            // Move the accessed item to the end of the dictionary to implement LRU
-            cache.Remove(fen);
-            cache[fen] = analysis;
-            return analysis;
-        }
-        return new List<(Position, Position)> { };
-    }
-
-    public void CacheAnalysis(string fen, List<(Position, Position)> analysis)
-    {
-        if (cache.Count >= maxCacheSize)
-        {
-            // Remove the least recently used item (first item in the dictionary)
-            cache.Remove(cache.Keys.First());
-        }
-        cache[fen] = analysis;
-    }
-}
-
-
-
-
-
-
-
-
-
-

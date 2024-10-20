@@ -113,11 +113,16 @@ public class Board : IBoardView, IPrototype<Board>
         PieceColor opponentColor = piece.Color == PieceColor.White ? PieceColor.Black : PieceColor.White;
         capturedPieces[opponentColor].Add(piece);  // Thêm quân bị bắt vào danh sách của đối thủ
         playerScores[opponentColor] += ChessUtils.PiecePoints[piece.Type]; //Cộng điểm
-    }  
+    }
     public List<Piece> GetCapturedPieces(PieceColor color)
     {
-        return capturedPieces[color]; //danh sách các quân cờ bị bắt của từng màu
+        // Sort the captured pieces by their points in ascending order
+        capturedPieces[color].Sort((p1, p2) => ChessUtils.PiecePoints[p1.Type].CompareTo(ChessUtils.PiecePoints[p2.Type]));
+
+        // Return the sorted list
+        return capturedPieces[color];
     }
+
     public int GetPlayerScore(PieceColor color)
     {
         return playerScores[color]; //điểm của người chơi theo màu

@@ -2,25 +2,25 @@
 
 public class CampaignASCIIArt
 {
-    // Static field to hold the single instance of the class
+    // Trường tĩnh để lưu giữ một thể hiện duy nhất của lớp
     private static readonly CampaignASCIIArt _instance = new CampaignASCIIArt();
 
-    // Public property to provide access to the singleton instance
+    // Thuộc tính công khai để cung cấp quyền truy cập vào thể hiện singleton
     public static CampaignASCIIArt Instance => _instance;
 
-    // List to hold the ASCII art for different levels
+    // Danh sách để lưu trữ ASCII art cho các cấp độ khác nhau
     public List<List<string>> NodeArt { get; private set; } = new List<List<string>>();
 
-    // Private constructor to prevent instantiation from outside
+    // Constructor riêng để ngăn chặn việc tạo thể hiện từ bên ngoài
     private CampaignASCIIArt()
     {
         InitASCIIArt();
     }
 
+    // Phương thức khởi tạo ASCII art
     public void InitASCIIArt()
     {
 
-        // ASCII Art for Difficulty 1
         List<string> level1 = new List<string>()
             {
                 @"                                               /\      /\",

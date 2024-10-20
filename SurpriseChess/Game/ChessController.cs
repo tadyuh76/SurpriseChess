@@ -1,4 +1,3 @@
-
 using Timer = System.Timers.Timer;
 
 namespace SurpriseChess;
@@ -9,11 +8,11 @@ internal class ChessController : IController
     private readonly ChessModel model; // Model trò chơi (MVC)
     private readonly ChessView view; // View trò chơi (MVC)
 
-    private GameMode gameMode = GameMode.PlayerVsPlayer;
-    private int? difficultyLevel;
-    private Match? match;
+    private GameMode gameMode = GameMode.PlayerVsPlayer; // Chế độ chơi mặc định
+    private int? difficultyLevel; // Mức độ khó (nếu có)
+    private Match? match; // Đối tượng lưu trữ thông tin trận đấu
 
-    private static Timer _timer; // Dùng để rerender đồng hồ mỗi giấy hoặc mỗi khi có update
+    private static Timer _timer = null!; // Timer để cập nhật đồng hồ trò chơi
 
     public ChessController(ChessModel model, ChessView view, GameMode gameMode, int? difficultyLevel = null)
     {
@@ -25,73 +24,74 @@ internal class ChessController : IController
         match = new Match
         {
             MatchDate = DateTime.Now,
-            HistoryFEN = new List<string>(), 
-            Result = "InProgress" 
+            HistoryFEN = new List<string>(), // Danh sách lưu trữ lịch sử nước đi
+            Result = "InProgress" // Trạng thái trận đấu
         };
         // Khởi tạo listener cho model mỗi khi có update từ board
-        this.model.BoardUpdated += Rerender;
+        this.model.BoardUpdated += Rerender; // Đăng ký sự kiện để rerender view khi có cập nhật từ model
     }
 
-    // Hàm được tạo ra để rerender view mỗi khi bot thực hiện nước đi
+    // Hàm để rerender view mỗi khi có cập nhật từ model
     private void Rerender()
     {
-        view.Render(model, cursorX, cursorY);
-        model.ChessTimer.PrintRemainingTime();
+        view.Render(model, cursorX, cursorY); // Vẽ lại bàn cờ
+        model.ChessTimer.PrintRemainingTime(); // In ra thời gian còn lại
     }
 
     // Chạy trò chơi
     public void Run()
     {
         model.NewGame(gameMode); // Bắt đầu trò chơi mới
-        model.ChessTimer.Start();
+        model.ChessTimer.Start(); // Bắt đầu đồng hồ
 
-        StartTimerInterval();
+        StartTimerInterval(); // Bắt đầu đồng hồ định kỳ
 
         while (model.Result == GameResult.InProgress) // Khi trò chơi đang diễn ra
         {
-            Rerender();
+            Rerender(); // Vẽ lại bàn cờ
 
             // Ghi lại FEN của trạng thái bàn cờ hiện tại
             string currentFEN = FEN.GetFEN(model.Board, model.GameState);
-
-            match!.AddFEN(currentFEN);
+            match!.AddFEN(currentFEN); // Thêm trạng thái FEN vào lịch sử
 
             ListenKeyStroke(); // Lắng nghe phím bấm
         }
 
+        // Tắt đồng hồ đếm giờ
+        DisposeTimers();
+
         // Khi trò chơi kết thúc, lưu kết quả và xuất lịch sử
         string finalFEN = FEN.GetFEN(model.Board, model.GameState);
-        match!.AddFEN(finalFEN);
+        match!.AddFEN(finalFEN); // Ghi lại FEN cuối cùng
 
-        match!.Result = model.Result.ToString();
+        match!.Result = model.Result.ToString(); // Lưu kết quả trận đấu
 
         // Loại bỏ các chuỗi FEN trùng lặp 
         List<string> processedHistory = GameHistoryPostProcessor.ProcessGameHistory(match.HistoryFEN);
-        match.HistoryFEN = processedHistory;
+        match.HistoryFEN = processedHistory; // Cập nhật lịch sử trận đấu
 
         MatchHistoryManager.SaveMatch(match); // Xuất trận đấu ra file bằng cách sử dụng MatchHistoryManager
-        
+
         ScreenManager.Instance.NavigateToScreen(
             new EndGameController(
                 new EndGameView(),
-                model.Result
-            )    
+                model.Result // Chuyển đến màn hình kết thúc trò chơi
+            )
         );
     }
 
-
     private void StartTimerInterval()
     {
-        // Create a timer that triggers every 1 second (1000 milliseconds)
+        // Tạo một timer có chu kỳ 1 giây (1000 milliseconds)
         _timer = new Timer(1000);
-        _timer.Elapsed += OnTimeInterval; // Attach the event handler
-        _timer.AutoReset = true; // Restart the timer automatically
-        _timer.Enabled = true; // Start the timer
+        _timer.Elapsed += OnTimeInterval!; // Gán handler cho sự kiện
+        _timer.AutoReset = true; // Đặt timer tự động khởi động lại
+        _timer.Enabled = true; // Bắt đầu timer
     }
 
     private void OnTimeInterval(Object source, System.Timers.ElapsedEventArgs e)
     {
-        model.ChessTimer.PrintRemainingTime();
+        model.ChessTimer.PrintRemainingTime(); // In ra thời gian còn lại khi timer tick
     }
 
     // Lắng nghe các phím bấm
@@ -100,12 +100,12 @@ internal class ChessController : IController
         ConsoleKey key = Console.ReadKey(true).Key; // Đọc phím bấm
 
         // Cập nhật vị trí con trỏ theo hướng di chuyển
-        if (key == ConsoleKey.LeftArrow && cursorX > 0) cursorX--;
-        else if (key == ConsoleKey.RightArrow && cursorX < 7) cursorX++;
-        else if (key == ConsoleKey.UpArrow && cursorY > 0) cursorY--;
-        else if (key == ConsoleKey.DownArrow && cursorY < 7) cursorY++;
-        else if (key == ConsoleKey.Enter) HandleBoardClick(new Position(cursorY, cursorX));
-        else if (key == ConsoleKey.Backspace) ScreenManager.Instance.BackToHomeScreen();
+        if (key == ConsoleKey.LeftArrow && cursorX > 0) cursorX--; // Di chuyển sang trái
+        else if (key == ConsoleKey.RightArrow && cursorX < 7) cursorX++; // Di chuyển sang phải
+        else if (key == ConsoleKey.UpArrow && cursorY > 0) cursorY--; // Di chuyển lên trên
+        else if (key == ConsoleKey.DownArrow && cursorY < 7) cursorY++; // Di chuyển xuống dưới
+        else if (key == ConsoleKey.Enter) HandleBoardClick(new Position(cursorY, cursorX)); // Xử lý nhấp chuột
+        else if (key == ConsoleKey.Backspace) HandleNavigateBack(); // Xử lý nhấn phím quay lại
     }
 
     // Xử lý nhấp chuột vào ô
@@ -116,7 +116,7 @@ internal class ChessController : IController
         // Nếu nhấp vào nước đi hợp lệ, di chuyển đến đó
         if (model.HighlightedMoves.Contains(clickedSquare))
         {
-            model.HandleMoveTo(clickedSquare);
+            model.HandleMoveTo(clickedSquare); // Thực hiện nước đi
             return;
         }
 
@@ -124,11 +124,25 @@ internal class ChessController : IController
         Piece? clickedPiece = model.Board.GetPieceAt(clickedSquare);
         if (clickedPiece?.Color == model.GameState.CurrentPlayerColor)
         {
-            model.Select(clickedSquare);
+            model.Select(clickedSquare); // Chọn quân cờ
         }
         else // Bỏ chọn quân cờ
         {
             model.Deselect();
         }
-    }    
+    }
+
+    private void HandleNavigateBack()
+    {
+        DisposeTimers(); // Dừng tất cả timers
+        ScreenManager.Instance.BackToHomeScreen(); // Quay lại màn hình chính
+    }
+
+    private void DisposeTimers()
+    {
+        _timer.Enabled = false; // Tắt timer
+        _timer.Stop(); // Dừng timer
+        _timer.Dispose(); // Giải phóng tài nguyên
+        model.ChessTimer.Dispose(); // Giải phóng đồng hồ trò chơi
+    }
 }
