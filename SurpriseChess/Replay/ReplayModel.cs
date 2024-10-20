@@ -62,22 +62,29 @@ public class ReplayModel
         {
             for (int col = 0; col < 8; col++)
             {
-                char? currentPiece = GetPieceAt(currentRows, row, col);
+                char? currentPiece = GetPieceAt(currentRows, row, col); 
                 char? nextPiece = GetPieceAt(nextRows, row, col);
 
                 if (currentPiece != nextPiece)
                 {
                     string square = $"{(char)('a' + col)}{8 - row}";
 
+                    // Nếu ô hiện tại không còn quân (vị trí đích)
                     if (currentPiece.HasValue && !nextPiece.HasValue)
                     {
                         fromSquare = square;
                     }
-                    else if (!currentPiece.HasValue && nextPiece.HasValue)
+                    // Nếu ô tương lai không còn quân (vị trí di chuyển)
+                    // Hoặc cả 2 ô đều có quân nhưng khác giá trị (vị trí có quân bị bắt)
+                    else if (
+                        (!currentPiece.HasValue && nextPiece.HasValue) ||
+                        (currentPiece.HasValue && nextPiece.HasValue)
+                    )
                     {
                         toSquare = square;
-                    }
+                    } 
 
+                    // Chỉ trả về giá trị khi đảm bảo xác định đủ vị trí đích và vị trí di chuyển
                     if (!string.IsNullOrEmpty(fromSquare) && !string.IsNullOrEmpty(toSquare))
                     {
                         return $"{fromSquare}{toSquare}";
