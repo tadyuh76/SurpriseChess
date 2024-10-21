@@ -1,7 +1,4 @@
 ﻿namespace SurpriseChess;
-using System;
-using System.Diagnostics;
-using System.Text;
 
 public class HomeView
 {

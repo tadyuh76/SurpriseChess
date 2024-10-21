@@ -1,5 +1,4 @@
-﻿
-namespace SurpriseChess;
+﻿namespace SurpriseChess;
 
 class EndGameController: IController
 {

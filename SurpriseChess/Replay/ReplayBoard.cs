@@ -1,4 +1,4 @@
-﻿using SurpriseChess;
+﻿namespace SurpriseChess;
 
 public class ReplayBoard
 {
