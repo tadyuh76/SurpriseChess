@@ -72,6 +72,8 @@ class EndGameView
             GameResult.BlackWins => "Rừng sâu thắng!",
             GameResult.DrawByStalemate => "Hoà do không còn nước đi hợp lệ!",
             GameResult.DrawByInsufficientMaterial => "Hoà do không còn đủ quân cờ!",
+            GameResult.WhiteLosesByTimesUp => "Vương quốc thua do hết giờ!",
+            GameResult.BlackLosesByTimesUp => "Rừng sâu thua do hết giờ!",
             _ => "Đã có lỗi xảy ra!"
         };
         string exit = "Nhấn phím bất kỳ để trở về màn hình chính...";

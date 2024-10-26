@@ -19,7 +19,9 @@ public enum GameResult
     WhiteWins,  // Trắng thắng
     BlackWins,  // Đen thắng
     DrawByStalemate, // Hòa do không còn nước đi hợp lệ
-    DrawByInsufficientMaterial // Hòa do không đủ quân
+    DrawByInsufficientMaterial, // Hòa do không đủ quân
+     WhiteLosesByTimesUp, // Trắng thua do hết giờ
+    BlackLosesByTimesUp  // Đen thua do hết giờ
 }
 
 // Các màn hình trong ứng dụng

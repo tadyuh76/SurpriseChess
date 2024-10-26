@@ -5,21 +5,21 @@ public class ChessTimer
 {
     private readonly Timer _whiteTimer;
     private readonly Timer _blackTimer;
-    private TimeSpan _whiteTime;
-    private TimeSpan _blackTime;
+    public TimeSpan WhiteTime;
+    public TimeSpan BlackTime;
     private bool _isWhiteTurn;
 
     public ChessTimer(TimeSpan initialTime)
     {
-        _whiteTime = initialTime;
-        _blackTime = initialTime;
+        WhiteTime = initialTime;
+        BlackTime = initialTime;
         _isWhiteTurn = true; // Start with White's turn
 
         _whiteTimer = new Timer(1000); // 1 second intervals
-        _whiteTimer.Elapsed += (sender, e) => UpdateTimer(ref _whiteTime);
+        _whiteTimer.Elapsed += (sender, e) => UpdateTimer(ref WhiteTime);
 
         _blackTimer = new Timer(1000);
-        _blackTimer.Elapsed += (sender, e) => UpdateTimer(ref _blackTime);
+        _blackTimer.Elapsed += (sender, e) => UpdateTimer(ref BlackTime);
     }
 
 
@@ -59,7 +59,7 @@ public class ChessTimer
     // Gets the remaining time for the current player
     public TimeSpan GetRemainingTime()
     {
-        return _isWhiteTurn ? _whiteTime : _blackTime;
+        return _isWhiteTurn ? WhiteTime : BlackTime;
     }
 
     // Updates the timer
@@ -72,7 +72,7 @@ public class ChessTimer
         else
         {
             Stop(); // Stop the timer if time is up
-            Console.WriteLine($"{(_isWhiteTurn ? "White" : "Black")} time is up!");
+            Console.WriteLine($"{(_isWhiteTurn ? "Vương quốc" : "Rừng sâu")} đã hết giờ!");
         }
     }
 
@@ -83,9 +83,9 @@ public class ChessTimer
         string whiteTimerText = "Thời gian còn lại của Vương quốc: ";
 
         Console.SetCursorPosition(blackTimerText.Length, 1);
-        Console.WriteLine(_blackTime);
+        Console.WriteLine(BlackTime);
         
         Console.SetCursorPosition(whiteTimerText.Length, 14);
-        Console.WriteLine(_whiteTime);
+        Console.WriteLine(WhiteTime);
     }
 }

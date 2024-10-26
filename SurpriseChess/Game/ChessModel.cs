@@ -17,7 +17,7 @@ public class ChessModel
 
     public GameMode GameMode { get; private set; } // Chế độ trò chơi
     public GameState GameState { get; private set; } = null!; // Trạng thái trò chơi
-    public GameResult Result { get; private set; } // Kết quả trò chơi
+    public GameResult Result { get; set; } // Kết quả trò chơi
 
     public Position? SelectedPosition { get; private set; } // Vị trí quân cờ được chọn
     public HashSet<Position> HighlightedMoves { get; private set; } = null!; // Các nước đi hợp lệ được đánh dấu
@@ -41,7 +41,7 @@ public class ChessModel
         EffectApplier = new EffectApplier(Board); // Khởi tạo EffectApplier
         SelectedPosition = null; // Không có quân nào được chọn
         HighlightedMoves = new HashSet<Position>(); // Không có nước đi nào được đánh dấu
-        ChessTimer = new ChessTimer(TimeSpan.FromMinutes(15)); // Khởi tạo đồng hồ trò chơi với 15 phút cho mỗi người chơi
+        ChessTimer = new ChessTimer(TimeSpan.FromMinutes(0.1)); // Khởi tạo đồng hồ trò chơi với 15 phút cho mỗi người chơi
     }
 
     // Phương thức chọn quân cờ
