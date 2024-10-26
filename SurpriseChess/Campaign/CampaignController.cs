@@ -46,6 +46,9 @@ public class CampaignController : IController
                 case ConsoleKey.Enter:
                     NavigateToInfoScreen(); // Điều hướng đến màn hình thông tin
                     break;
+                case ConsoleKey.Backspace:
+                    ScreenManager.Instance.BackToHomeScreen();
+                    break;
             }
 
             view.Render(model); // Cập nhật view sau khi xử lý đầu vào

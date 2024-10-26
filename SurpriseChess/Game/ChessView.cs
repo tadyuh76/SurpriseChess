@@ -77,7 +77,6 @@ namespace SurpriseChess
             // Thiết lập màu nền cho ô cờ dựa trên trạng thái của nó
             SetSquareBackgroundColor(board, position, selectedPosition, highlightedMoves, cursorX, cursorY);
 
-
             Piece? piece = board.GetPieceAt(position);
             //Nếu quân cờ không phải là khoảng trống và hiệu ứng toàn hình được áp dụng
             if (piece != null && piece.IsInvisible == true)

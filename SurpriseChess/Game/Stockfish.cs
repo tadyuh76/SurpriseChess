@@ -57,7 +57,6 @@ public class StockFish : IChessBot
                     // Chuyển đổi chuỗi move thành vị trí bắt đầu và kết thúc
                     Position startPosition = FEN.FENToPosition(move[..2]); // Lấy vị trí bắt đầu
                     Position endPosition = FEN.FENToPosition(move[2..4]); // Lấy vị trí kết thúc
-                    Debug.Print($"stockfish best move is: {move}"); // In ra nước đi tốt nhất
                     bestMoves.Add((startPosition, endPosition)); // Thêm vào danh sách
                 }
             }

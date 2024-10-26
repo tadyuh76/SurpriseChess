@@ -3,89 +3,94 @@ using Timer = System.Timers.Timer;
 
 public class ChessTimer
 {
-    private readonly Timer _whiteTimer;
-    private readonly Timer _blackTimer;
-    private TimeSpan _whiteTime;
-    private TimeSpan _blackTime;
-    private bool _isWhiteTurn;
+    // Biến hẹn giờ cho người chơi trắng và đen
+    private readonly Timer WhiteTimer;
+    private readonly Timer BlackTimer;
 
+    // Thời gian còn lại cho người chơi trắng và đen, công khai để truy cập từ bên ngoài lớp
+    public TimeSpan WhiteTime;
+    public TimeSpan BlackTime;
+
+    // Xác định lượt hiện tại: true nếu là lượt của trắng, false nếu là lượt của đen
+    private bool IsWhiteTurn;
+
+    // Hàm khởi tạo, thiết lập thời gian ban đầu và cài đặt các sự kiện cho bộ đếm giờ
     public ChessTimer(TimeSpan initialTime)
     {
-        _whiteTime = initialTime;
-        _blackTime = initialTime;
-        _isWhiteTurn = true; // Start with White's turn
+        WhiteTime = initialTime;
+        BlackTime = initialTime;
+        IsWhiteTurn = true; // Bắt đầu với lượt của trắng
 
-        _whiteTimer = new Timer(1000); // 1 second intervals
-        _whiteTimer.Elapsed += (sender, e) => UpdateTimer(ref _whiteTime);
+        WhiteTimer = new Timer(1000); // Khoảng thời gian 1 giây
+        WhiteTimer.Elapsed += (sender, e) => UpdateTimer(ref WhiteTime);
 
-        _blackTimer = new Timer(1000);
-        _blackTimer.Elapsed += (sender, e) => UpdateTimer(ref _blackTime);
+        BlackTimer = new Timer(1000);
+        BlackTimer.Elapsed += (sender, e) => UpdateTimer(ref BlackTime);
     }
 
-
-    // Starts the timer for the current player
+    // Bắt đầu đếm giờ cho người chơi hiện tại
     public void Start()
     {
-        if (_isWhiteTurn)
-            _whiteTimer.Start();
+        if (IsWhiteTurn)
+            WhiteTimer.Start();
         else
-            _blackTimer.Start();
+            BlackTimer.Start();
     }
 
-    // Stops the timer for the current player
+    // Dừng đếm giờ cho người chơi hiện tại
     public void Stop()
     {
-        _whiteTimer.Stop();
-        _blackTimer.Stop();
+        WhiteTimer.Stop();
+        BlackTimer.Stop();
     }
 
+    // Giải phóng tài nguyên khi không sử dụng bộ đếm giờ nữa
     public void Dispose()
     {
         Stop();
-        _whiteTimer.Dispose();
-        _blackTimer.Dispose();
+        WhiteTimer.Dispose();
+        BlackTimer.Dispose();
     }
 
-    // Switches the turn to the other player
+    // Chuyển lượt cho người chơi khác
     public void UpdateTurn()
     {
-        Stop(); // Stop the current player's timer
+        Stop(); // Dừng bộ đếm giờ của người chơi hiện tại
 
-        _isWhiteTurn = !_isWhiteTurn; // Switch turn
+        IsWhiteTurn = !IsWhiteTurn; // Đổi lượt
 
-        Start(); // Start the timer for the next player
+        Start(); // Bắt đầu đếm giờ cho người chơi tiếp theo
     }
 
-    // Gets the remaining time for the current player
+    // Lấy thời gian còn lại của người chơi hiện tại
     public TimeSpan GetRemainingTime()
     {
-        return _isWhiteTurn ? _whiteTime : _blackTime;
+        return IsWhiteTurn ? WhiteTime : BlackTime;
     }
 
-    // Updates the timer
+    // Cập nhật thời gian cho bộ đếm giờ
     private void UpdateTimer(ref TimeSpan time)
     {
         if (time.TotalSeconds > 0)
         {
-            time = time.Subtract(TimeSpan.FromSeconds(1)); // Decrement by 1 second
+            time = time.Subtract(TimeSpan.FromSeconds(1)); // Giảm 1 giây
         }
         else
         {
-            Stop(); // Stop the timer if time is up
-            Console.WriteLine($"{(_isWhiteTurn ? "White" : "Black")} time is up!");
+            Stop(); // Dừng bộ đếm giờ nếu hết thời gian
         }
     }
 
-    // Debugging output for remaining time
+    // Hiển thị thời gian còn lại của cả hai người chơi (dành cho mục đích debug)
     public void PrintRemainingTime()
     {
         string blackTimerText = "Thời gian còn lại của Rừng sâu: ";
         string whiteTimerText = "Thời gian còn lại của Vương quốc: ";
 
         Console.SetCursorPosition(blackTimerText.Length, 1);
-        Console.WriteLine(_blackTime);
-        
+        Console.WriteLine(BlackTime);
+
         Console.SetCursorPosition(whiteTimerText.Length, 14);
-        Console.WriteLine(_whiteTime);
+        Console.WriteLine(WhiteTime);
     }
 }

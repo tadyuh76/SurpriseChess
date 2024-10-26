@@ -92,6 +92,16 @@ internal class ChessController : IController
     private void OnTimeInterval(Object source, System.Timers.ElapsedEventArgs e)
     {
         model.ChessTimer.PrintRemainingTime(); // In ra thời gian còn lại khi timer tick
+
+        // Nếu một bên hết giờ, cập nhật trạng thái trò chơi
+        if (model.ChessTimer.WhiteTime.TotalMilliseconds <= 0)
+        {
+            model.UpdateGameResult(GameResult.WhiteOutOfTime);
+        }
+        else if (model.ChessTimer.BlackTime.TotalMilliseconds <= 0)
+        {
+            model.UpdateGameResult(GameResult.BlackOutOfTime);
+        }
     }
 
     // Lắng nghe các phím bấm

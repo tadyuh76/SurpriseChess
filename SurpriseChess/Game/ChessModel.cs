@@ -48,7 +48,6 @@ public class ChessModel
     public void Select(Position position)
     {
         SelectedPosition = position; // Lưu vị trí được chọn
-        Debug.Print($"Selecting {FEN.PositionToFEN(position)}"); // In ra vị trí được chọn
         HighlightedMoves = Arbiter.GetLegalMoves(position); // Lấy các nước đi hợp lệ từ vị trí đã chọn
     }
 
@@ -67,7 +66,6 @@ public class ChessModel
 
         GameState.UpdateStateAfterMove(SelectedPosition, destination); // Cập nhật trạng thái trò chơi
         Board.MakeMove(SelectedPosition, destination); // Thực hiện nước đi trên bàn cờ
-        Debug.Print($"Moved to {FEN.PositionToFEN(destination)}"); // In ra nước đi đã thực hiện
 
         EffectApplier.ClearEffects(); // Xóa các hiệu ứng trước đó
         EffectApplier.ApplyEffects(destination); // Áp dụng các hiệu ứng tại vị trí đích
@@ -101,7 +99,6 @@ public class ChessModel
     public async void HandleBotMove()
     {
         (Position source, Position destination) = await GetBotMove(); // Lấy nước đi của bot
-        Debug.Print($"bot's gonna move: from {FEN.PositionToFEN(source)} to {FEN.PositionToFEN(destination)}");
         Select(source); // Chọn quân bot
         BoardUpdated!.Invoke(); // Thông báo cập nhật bàn cờ
 
@@ -118,11 +115,6 @@ public class ChessModel
         List<(Position, Position)> bestMoves = await chessBot.GetBestMoves(fen); // Lấy các nước đi tốt nhất từ bot
 
         // Kiểm tra nếu nước đi của bot là hợp lệ trước khi thực hiện
-        Debug.Print($"legal moves at stockfish 1st move ({FEN.PositionToFEN(bestMoves[0].Item1)} {FEN.PositionToFEN(bestMoves[0].Item2)})");
-        foreach (var move in Arbiter.GetLegalMoves(bestMoves[0].Item1))
-        {
-            Debug.Print(FEN.PositionToFEN(move)); // In ra các nước đi hợp lệ
-        }
         foreach ((Position source, Position destination) in bestMoves)
         {
             if (Arbiter.GetLegalMoves(source).Contains(destination)) // Kiểm tra tính hợp lệ
@@ -130,7 +122,6 @@ public class ChessModel
                 return (source, destination); // Trả về nước đi hợp lệ
             }
         }
-        Debug.Print("Bot is choosing a random move");
         // Nếu bot không lấy được nước đi từ Stockfish, chọn một nước đi ngẫu nhiên
         return GetRandomMove();
     }
@@ -147,5 +138,10 @@ public class ChessModel
             }
         }
         return legalMoves[random.Next(legalMoves.Count)]; // Trả về một nước đi ngẫu nhiên
+    }
+
+    public void UpdateGameResult(GameResult gameResult)
+    {
+        Result = gameResult;
     }
 }

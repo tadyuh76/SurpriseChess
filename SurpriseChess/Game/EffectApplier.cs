@@ -33,8 +33,8 @@ public class EffectApplier
             ApplyInvisibilityEffect(movedPiece.Color);
             return;
         }
-        //Kiểm tra hiệu ứng tê liệt (20%)
-        cumulativeChance += 0.2;
+        //Kiểm tra hiệu ứng tê liệt (30%)
+        cumulativeChance += 0.3;
         if (randomValue < cumulativeChance)
         {
             ApplyParalysisEffect(ChessUtils.OpponentColor(movedPiece.Color));
@@ -47,7 +47,6 @@ public class EffectApplier
             ApplyShieldEffect(movedPiece.Color);
             return;
         }
-        //không áp dụng hiệu ứng nào (10%)
     }
 
     //hàm xóa hiệu ứng trước khi áp dụng một hiệu ứng khác
